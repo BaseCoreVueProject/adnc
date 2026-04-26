@@ -35,7 +35,7 @@ Whether you are building a new system from scratch or refactoring and evolving a
 
 It is recommended to start in this order:
 
-1. Read the [Quick Start documentation](https://aspdotnetcore.net/docs/quickstart/)
+1. Read the [Quick Start documentation](https://github.com/alphayu/adnc/wiki/02-quickstart)
 2. Open the solution with `src/Adnc.sln` or `src/Demo/Adnc.Demo.sln`
 3. If you need the front-end project, see the links at the end of this document
 4. If you need seed data, see the database script link at the end of this document
@@ -198,75 +198,31 @@ Whse/
 
 ## Documentation Links
 
-### Available Documentation
-
-#### Configuration file reference
-
-Explains each configuration section and what it does: [View documentation](https://aspdotnetcore.net/docs/appsettings/)
-
-#### How to manually deploy to containers
-
-Covers how to use Docker to install and configure a Consul cluster, the SkyWalking stack, how to write Dockerfiles for the related projects, and how to deploy multiple services: [View documentation](https://aspdotnetcore.net/docs/deploy-docker/)
-
-#### How to implement read/write splitting
-
-Explains why middleware is used for read/write splitting and how to write EF Core code under this approach: [View documentation](https://aspdotnetcore.net/docs/maxscale-readwritesplit/)
-
-#### How to use Cache, Redis, distributed locks, and Bloom filters
-
-Includes usage patterns for Cache, Redis, distributed locks, and Bloom filters, as well as strategies to avoid cache avalanche, breakdown, penetration, and synchronization issues: [View documentation](https://aspdotnetcore.net/docs/cache-redis-distributedlock-bloomfilter/)
-
-#### How to dynamically assign Snowflake workerId
-
-Introduces the Yitter Snowflake algorithm, its features, configuration, and how to get a workerId dynamically: [View documentation](https://aspdotnetcore.net/docs/snowflake-max_value-workerid/)
-
-#### How authentication and authorization work
-
-Explains why a hybrid JwtBearer + Basic authentication model is used, along with the corresponding implementation and configuration: [View documentation](https://aspdotnetcore.net/docs/claims-based-authentication/)
-
-#### How to use the EF Core repository
-
-Covers repository basics, unit of work, Code First, native SQL, and related demo code and SQL examples.
-
-1. [How to use the repository (1) - Basic features](https://aspdotnetcore.net/docs/efcore-pemelo-grud/)<br/>
-1. [How to use the repository (2) - Distributed transactions / local transactions](https://aspdotnetcore.net/docs/efcore-pemolo-unitofwork/)<br/>
-1. [How to use the repository (3) - Code First](https://aspdotnetcore.net/docs/efcore-pemelo-codefirst/)<br/>
-1. [How to use the repository (4) - Writing raw SQL](https://aspdotnetcore.net/docs/efcore-pemelo-sql/)<br/>
-1. [How to use the repository (5) - Switching database types](https://aspdotnetcore.net/docs/efcore-pemelo-sqlserver/)<br/>
-
-### Planned Documentation
-
-#### How to use Jenkins + Shell scripts for automated deployment
-
-- Documentation is being prepared
-
-#### How to deploy to Kubernetes
-
-- Documentation is being prepared
-
-#### How to build business services from scratch
-
-- Documentation is being prepared
-
-#### How to call microservices
-
-- Documentation is being prepared
-
-#### How to configure the gateway
-
-- Documentation is being prepared
-
-#### How to use the service registry / configuration center
-
-- Documentation is being prepared
-
-#### How to configure distributed tracing
-
-- Documentation is being prepared
-
-#### How to configure health checks
-
-- Documentation is being prepared
+| Index | English Title                                                |
+| :---- | :----------------------------------------------------------- |
+| 01    | [ADNC Project Tour: A Practical .NET 8 Implementation](https://github.com/alphayu/adnc/wiki/01-adnc-intro) |
+| 02    | [ADNC Quick Start Guide](https://github.com/alphayu/adnc/wiki/02-quickstart) |
+| 03    | [ADNC Quick Docker Deployment Guide](https://github.com/alphayu/adnc/wiki/03-quickly-docker-deploy) |
+| 04    | [ADNC Configuration Nodes Detailed Explanation](https://github.com/alphayu/adnc/wiki/04-appsettings) |
+| 05    | [ADNC Development Workflow](https://github.com/alphayu/adnc/wiki/05-feature-dev-guide) |
+| 06    | [ADNC Repository Layer Development Guide](https://github.com/alphayu/adnc/wiki/06-repository-dev-guide) |
+| 07    | [ADNC Service Layer Development Guide](https://github.com/alphayu/adnc/wiki/07-service-dev-guide) |
+| 08    | [ADNC API Layer Development Guide](https://github.com/alphayu/adnc/wiki/08-api-dev-guide) |
+| 09    | [ADNC Authentication and Authorization](https://github.com/alphayu/adnc/wiki/09-claims-based-authentication) |
+| 10    | [ADNC Repository Usage: Basic Functionality](https://github.com/alphayu/adnc/wiki/10-efcore-pemelo-curd) |
+| 11    | [ADNC Repository Usage: Code First](https://github.com/alphayu/adnc/wiki/11-efcore-pemelo-codefirst) |
+| 12    | [ADNC Repository Usage: Switching Database Types](https://github.com/alphayu/adnc/wiki/12-efcore-pemelo-sqlserver) |
+| 13    | [ADNC Repository Usage: Transactions and Unit of Work](https://github.com/alphayu/adnc/wiki/13-efcore-pemolo-unitofwork) |
+| 14    | [ADNC Repository Usage: Executing Raw SQL](https://github.com/alphayu/adnc/wiki/14-efcore-pemelo-sql) |
+| 15    | [ADNC Repository Usage: Read/Write Splitting](https://github.com/alphayu/adnc/wiki/15-maxsale-readwritesplit) |
+| 16    | [ADNC ID Generator: Snowflake Algorithm](https://github.com/alphayu/adnc/wiki/16-snowflake-max_value-wokerid) |
+| 17    | [ADNC Cache: Redis, Distributed Locks, and Bloom Filters](https://github.com/alphayu/adnc/wiki/17-cache-redis-distributedlock-bloomfilter) |
+| 18    | [ADNC Inter-service Communication: HTTP (Refit)](https://github.com/alphayu/adnc/wiki/18-service-http-call) |
+| 19    | [ADNC Inter-service Communication: gRPC](https://github.com/alphayu/adnc/wiki/19-service-grpc-call) |
+| 20    | [ADNC Inter-service Communication: Events (CAP)](https://github.com/alphayu/adnc/wiki/20-service-event-call) |
+| 21    | [ADNC Observability: Enabling SkyAPM (SkyWalking)](https://github.com/alphayu/adnc/wiki/21-skyapm-tracing) |
+| 22    | [ADNC Configuration Center: Consul](https://github.com/alphayu/adnc/wiki/22-config-center) |
+| 23    | [ADNC Service Registry: Consul](https://github.com/alphayu/adnc/wiki/23-registry-center) |
 
 ## Screenshots / JMeter / Website
 
