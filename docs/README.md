@@ -1,6 +1,6 @@
 # ADNC Documentation
 
-ADNC is a .NET 8-based application framework and sample system for building distributed, service-oriented business applications.
+ADNC is a pragmatic .NET 8 reference architecture for modular monoliths, distributed applications, and microservice systems.
 
 This Docsify site is organized by topic. Start with the quick start guides if you want to run the project locally, or jump directly to a specific development area.
 

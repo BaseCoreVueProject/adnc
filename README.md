@@ -195,13 +195,13 @@ Build configuration is centralized through:
 The fastest way to get started is to follow the quick start guide. The demo requires infrastructure such as Consul, Redis, RabbitMQ, MySQL, logging components, and service configuration, so the startup sequence matters.
 
 1. Install the `.NET 8 SDK`.
-2. Read the [ADNC Quick Start Guide](https://docs.aspdotnetcore.net/adnc/02-quickstart).
+2. Read the [ADNC Quick Start Guide](https://docs.aspdotnetcore.net/wiki/en/02-quickstart).
 3. Open `src/Adnc.sln` for framework packages or `src/Demo/Adnc.Demo.sln` for demo services.
 4. Prepare infrastructure from the quick start guide or the Docker Compose assets in `docs/devops-staging`.
 5. Initialize demo data from [`database/mysql/adnc.sql`](./database/mysql/adnc.sql).
 6. Start the gateway and demo services in the documented order.
 
-For Docker-oriented setup, use the [Quick Docker Deployment Guide](https://docs.aspdotnetcore.net/adnc/03-quickly-docker-deploy).
+For Docker-oriented setup, use the [Quick Docker Deployment Guide](https://docs.aspdotnetcore.net/wiki/en/03-quickly-docker-deploy).
 
 ## Demo Domain
 
@@ -260,29 +260,29 @@ Whse/
 
 | Index | Topic                                                        |
 | ----- | ------------------------------------------------------------ |
-| 01    | [ADNC Project Tour: A Practical .NET 8 Implementation](https://docs.aspdotnetcore.net/adnc/01-adnc-intro) |
-| 02    | [ADNC Quick Start Guide](https://docs.aspdotnetcore.net/adnc/02-quickstart) |
-| 03    | [ADNC Quick Docker Deployment Guide](https://docs.aspdotnetcore.net/adnc/03-quickly-docker-deploy) |
-| 04    | [ADNC Configuration Nodes Detailed Explanation](https://docs.aspdotnetcore.net/adnc/04-appsettings) |
-| 05    | [ADNC Development Workflow](https://docs.aspdotnetcore.net/adnc/05-feature-dev-guide) |
-| 06    | [ADNC Repository Layer Development Guide](https://docs.aspdotnetcore.net/adnc/06-repository-dev-guide) |
-| 07    | [ADNC Service Layer Development Guide](https://docs.aspdotnetcore.net/adnc/07-service-dev-guide) |
-| 08    | [ADNC API Layer Development Guide](https://docs.aspdotnetcore.net/adnc/08-api-dev-guide) |
-| 09    | [ADNC Authentication and Authorization](https://docs.aspdotnetcore.net/adnc/09-claims-based-authentication) |
-| 10    | [ADNC Repository Usage: Basic Functionality](https://docs.aspdotnetcore.net/adnc/10-efcore-pemelo-curd) |
-| 11    | [ADNC Repository Usage: Code First](https://docs.aspdotnetcore.net/adnc/11-efcore-pemelo-codefirst) |
-| 12    | [ADNC Repository Usage: Switching Database Types](https://docs.aspdotnetcore.net/adnc/12-efcore-pemelo-sqlserver) |
-| 13    | [ADNC Repository Usage: Transactions and Unit of Work](https://docs.aspdotnetcore.net/adnc/13-efcore-pemolo-unitofwork) |
-| 14    | [ADNC Repository Usage: Executing Raw SQL](https://docs.aspdotnetcore.net/adnc/14-efcore-pemelo-sql) |
-| 15    | [ADNC Repository Usage: Read/Write Splitting](https://docs.aspdotnetcore.net/adnc/15-maxsale-readwritesplit) |
-| 16    | [ADNC ID Generator: Snowflake Algorithm](https://docs.aspdotnetcore.net/adnc/16-snowflake-max_value-wokerid) |
-| 17    | [ADNC Cache: Redis, Distributed Locks, and Bloom Filters](https://docs.aspdotnetcore.net/adnc/17-cache-redis-distributedlock-bloomfilter) |
-| 18    | [ADNC Inter-service Communication: HTTP with Refit](https://docs.aspdotnetcore.net/adnc/18-service-http-call) |
-| 19    | [ADNC Inter-service Communication: gRPC](https://docs.aspdotnetcore.net/adnc/19-service-grpc-call) |
-| 20    | [ADNC Inter-service Communication: Events with CAP](https://docs.aspdotnetcore.net/adnc/20-service-event-call) |
-| 21    | [ADNC Observability: Enabling SkyAPM and SkyWalking](https://docs.aspdotnetcore.net/adnc/21-skyapm-tracing) |
-| 22    | [ADNC Configuration Center: Consul](https://docs.aspdotnetcore.net/adnc/22-config-center) |
-| 23    | [ADNC Service Registry: Consul](https://docs.aspdotnetcore.net/adnc/23-registry-center) |
+| 01    | [ADNC Project Tour: A Practical .NET 8 Implementation](https://docs.aspdotnetcore.net/wiki/en/01-adnc-intro) |
+| 02    | [ADNC Quick Start Guide](https://docs.aspdotnetcore.net/wiki/en/02-quickstart) |
+| 03    | [ADNC Quick Docker Deployment Guide](https://docs.aspdotnetcore.net/wiki/en/03-quickly-docker-deploy) |
+| 04    | [ADNC Configuration Nodes Detailed Explanation](https://docs.aspdotnetcore.net/wiki/en/04-appsettings) |
+| 05    | [ADNC Development Workflow](https://docs.aspdotnetcore.net/wiki/en/05-feature-dev-guide) |
+| 06    | [ADNC Repository Layer Development Guide](https://docs.aspdotnetcore.net/wiki/en/06-repository-dev-guide) |
+| 07    | [ADNC Service Layer Development Guide](https://docs.aspdotnetcore.net/wiki/en/07-service-dev-guide) |
+| 08    | [ADNC API Layer Development Guide](https://docs.aspdotnetcore.net/wiki/en/08-api-dev-guide) |
+| 09    | [ADNC Authentication and Authorization](https://docs.aspdotnetcore.net/wiki/en/09-claims-based-authentication) |
+| 10    | [ADNC Repository Usage: Basic Functionality](https://docs.aspdotnetcore.net/wiki/en/10-efcore-pemelo-curd) |
+| 11    | [ADNC Repository Usage: Code First](https://docs.aspdotnetcore.net/wiki/en/11-efcore-pemelo-codefirst) |
+| 12    | [ADNC Repository Usage: Switching Database Types](https://docs.aspdotnetcore.net/wiki/en/12-efcore-pemelo-sqlserver) |
+| 13    | [ADNC Repository Usage: Transactions and Unit of Work](https://docs.aspdotnetcore.net/wiki/en/13-efcore-pemolo-unitofwork) |
+| 14    | [ADNC Repository Usage: Executing Raw SQL](https://docs.aspdotnetcore.net/wiki/en/14-efcore-pemelo-sql) |
+| 15    | [ADNC Repository Usage: Read/Write Splitting](https://docs.aspdotnetcore.net/wiki/en/15-maxsale-readwritesplit) |
+| 16    | [ADNC ID Generator: Snowflake Algorithm](https://docs.aspdotnetcore.net/wiki/en/16-snowflake-max_value-wokerid) |
+| 17    | [ADNC Cache: Redis, Distributed Locks, and Bloom Filters](https://docs.aspdotnetcore.net/wiki/en/17-cache-redis-distributedlock-bloomfilter) |
+| 18    | [ADNC Inter-service Communication: HTTP with Refit](https://docs.aspdotnetcore.net/wiki/en/18-service-http-call) |
+| 19    | [ADNC Inter-service Communication: gRPC](https://docs.aspdotnetcore.net/wiki/en/19-service-grpc-call) |
+| 20    | [ADNC Inter-service Communication: Events with CAP](https://docs.aspdotnetcore.net/wiki/en/20-service-event-call) |
+| 21    | [ADNC Observability: Enabling SkyAPM and SkyWalking](https://docs.aspdotnetcore.net/wiki/en/21-skyapm-tracing) |
+| 22    | [ADNC Configuration Center: Consul](https://docs.aspdotnetcore.net/wiki/en/22-config-center) |
+| 23    | [ADNC Service Registry: Consul](https://docs.aspdotnetcore.net/wiki/en/23-registry-center) |
 
 ## Ecosystem
 
