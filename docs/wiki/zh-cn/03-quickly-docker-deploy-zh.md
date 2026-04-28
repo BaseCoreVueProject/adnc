@@ -26,21 +26,21 @@ docker network create \
 
 ## 4. 上传中间件部署 yml 文件
 
-请将本地 `adnc\doc\devops-staging` 文件夹上传至服务器 `/opt/adnc` 目录。
+请将本地 `adnc\deploy\staging` 文件夹上传至服务器 `/opt/adnc` 目录。
 
 上传完成后，服务器目录结构如下：
 
 ```bash
 opt
 └── adnc
-    ├── devops-staging
+    ├── staging
     └── src
 ```
 
 ## 5. 启动中间件容器
 
 ```bash
-cd /opt/adnc/devops-staging
+cd /opt/adnc/staging
 docker compose up -d
 ```
 
@@ -90,7 +90,7 @@ adnc
 │   ├── deploy_ocelot.sh
 │   ├── Directory.Packages.props
 │   └── Directory.Build.props
-└── devops-staging
+└── staging
 ```
 
 ## 8. 执行微服务部署脚本
@@ -113,7 +113,7 @@ bash deploy_ocelot.sh
 pnpm run build
 ```
 
-- `build` 成功后，将 `dist` 目录内的文件上传到 `/opt/adnc/devops-staging/adnc-nginx/html` 目录。
+- `build` 成功后，将 `dist` 目录内的文件上传到 `/opt/adnc/staging/adnc-nginx/html` 目录。
 - 访问 `http://{服务器IP}` 并登录，检查系统是否部署成功。
 
 ------
