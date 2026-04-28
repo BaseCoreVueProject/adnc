@@ -138,3 +138,7 @@ You can disable the policy through `RpcInfo:Polly:Enable`, but disabling it in p
 - 401/authentication failed: Confirm that the Refit interface declares the correct `Authorization` scheme (`Basic` or `Bearer`); confirm that the `Basic` configuration is consistent; if Bearer passthrough is used, confirm that the inbound request carries a Bearer token.
 - Service address not found: Confirm that `ServiceAddressConsts.*` exactly matches `RpcInfo:Address[].Service`; confirm that the address field corresponding to the current `RegisterType` is configured.
 - Call chain is too long: Longer synchronous call chains are less stable. Consider event-driven decomposition or introduce aggregation/query services to reduce call depth.
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

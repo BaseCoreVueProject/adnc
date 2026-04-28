@@ -163,7 +163,9 @@
 
 仓库内提供了 Consul 的 docker-compose 与初始化脚本（包含 KV 初始化；也可直接作为注册中心使用）：
 
-- `doc/devops-staging/adnc-consul/docker-compose.yml`
-- `doc/devops-staging/adnc-consul/consul-init.sh`
-- `doc/devops/docker-compose/adnc-consul/docker-compose.yml`
-- `doc/devops/docker-compose/adnc-consul/consul-init.sh`
+- `deploy/staging/adnc-consul/docker-compose.yml`
+- `deploy/staging/adnc-consul/consul-init.sh`
+
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

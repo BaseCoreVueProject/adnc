@@ -61,3 +61,7 @@ Contracts/
 
 - [服务层开发文档](https://aspdotnetcore.net/docs/application-service/)
 - 详见 Demo 各服务 Application 层实现
+
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

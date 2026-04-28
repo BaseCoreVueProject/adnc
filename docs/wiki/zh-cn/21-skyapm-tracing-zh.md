@@ -83,3 +83,6 @@ Demo 服务的通用配置在：
 - OAP 地址是否可达：确认 `SkyWalking:Transport:gRPC:Servers` 指向可访问的地址与端口。
 - 日志：查看 `SkyWalking:Logging:FilePath` 指定的日志文件（默认 `txtlogs\\skyapm-{Date}.log`）。
 
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

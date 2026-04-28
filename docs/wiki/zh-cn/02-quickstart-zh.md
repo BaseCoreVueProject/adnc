@@ -103,6 +103,6 @@ pnpm run dev
 
 至此，`adnc` 已可在本地正常运行。
 
-如果本项目对你有帮助，欢迎 `Star` & `Fork` 支持！
+----
 
-[ADNC](https://aspdotnetcore.net/) —— 一个可落地的 .NET 微服务/分布式开发框架。
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

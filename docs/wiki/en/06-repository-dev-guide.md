@@ -58,3 +58,7 @@ Repository/
 - Entity, mapping, and migration example: see `docs/wiki/en/feature-dev-guide.md`.
 - EF Core repository and unit of work: see `docs/wiki/en/efcore-pemelo-curd.md` and `docs/wiki/en/efcore-pemolo-unitofwork.md`.
 - Raw SQL capability: see `docs/wiki/en/efcore-pemelo-sql.md`.
+
+-----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

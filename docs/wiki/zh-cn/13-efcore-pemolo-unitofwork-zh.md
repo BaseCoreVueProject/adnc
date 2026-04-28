@@ -80,6 +80,4 @@ public class xxxAppService
 
 ```
 ------
-—— 完 ——
-
-如有帮助，欢迎 Star & Fork。
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

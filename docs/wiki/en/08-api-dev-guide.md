@@ -56,3 +56,7 @@ Api/
 ## 8. Reference Implementation
 
 For details, see `Api/Controllers` and the corresponding `Application` service implementations in each Demo service.
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

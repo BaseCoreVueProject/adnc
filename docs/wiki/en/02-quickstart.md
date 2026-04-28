@@ -102,6 +102,6 @@ pnpm run dev
 
 At this point, `adnc` can run normally in your local environment.
 
-If this project is helpful to you, please support it with a `Star` and `Fork`.
+----
 
-![ADNC](https://aspdotnetcore.net/) - An implementable .NET microservice/distributed development framework.
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

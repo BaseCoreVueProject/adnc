@@ -9,8 +9,15 @@ to generate IDs to take into account uniqueness and high performance in a distri
 ## Introduction to Yitter Snowflake Algorithm
 The ID of the traditional snowflake algorithm consists of a 1-bit sign bit, a 41-bit timestamp, a 10-bit worker machine ID, and a 12-bit self-increasing sequence number, totaling 64 bits (long type). Its main disadvantage is that the generated ID is too long, exceeding the maximum safe integer of the JavaScript Number type, causing JS to fail to parse it correctly.Yitter has optimized the traditional snowflake algorithm and supports customizing the length of "work machine ID" and "auto-increment serial number", which are both 6 digits by default. Under this configuration, no generated ID will exceed the maximum value of the JS Number type for 50 years. At the same time,[Yitter](https://github.com/yitter/IdGenerator)’s snowflake algorithm also solves the problem of system time dialback and provides detailed documentation and test cases.
 
-### Yitter algorithm characteristics✔ Generate integer numbers that increase monotonically over time (not guaranteed to be continuous), have shorter lengths, and will not exceed the maximum value of the JS Number type in 50 years (default configuration).✔ The generation speed is faster, 2-5 times that of the traditional snowflake algorithm, 500,000 can be generated in 0.1 seconds (based on 8th generation low-voltage i7).✔ Support time callback processing. For example, if the server time is set back 1 second, the algorithm can automatically adapt and generate a unique ID for the critical time.✔Supports manual insertion of new IDs. When the business needs to generate new IDs in historical time, the reserved space can generate 5,000 IDs per second.✔ Does not rely on any external cache or database (the dynamic library that automatically registers WorkerId in the K8s environment relies on Redis).✔ Basic functionality works out of the box, no configuration files or database connections required.
+### Yitter algorithm characteristics
+✔ Generate integer numbers that increase monotonically over time (not guaranteed to be continuous), have shorter lengths, and will not exceed the maximum value of the JS Number type in 50 years (default configuration).
+✔ The generation speed is faster, 2-5 times that of the traditional snowflake algorithm, 500,000 can be generated in 0.1 seconds (based on 8th generation low-voltage i7).
+✔ Support time callback processing. For example, if the server time is set back 1 second, the algorithm can automatically adapt and generate a unique ID for the critical time.
+✔Supports manual insertion of new IDs. When the business needs to generate new IDs in historical time, the reserved space can generate 5,000 IDs per second.
+✔ Does not rely on any external cache or database (the dynamic library that automatically registers WorkerId in the K8s environment relies on Redis).
+✔ Basic functionality works out of the box, no configuration files or database connections required.
 ## Yitter performance data(Parameters: 10-bit auto-increasing sequence, 1000 drift maximum values)
+
 | Continuous requests | 5K | 5W | 50W |
 | 
 
@@ -145,4 +152,4 @@ namespace Adnc.XXX.Application.Services
 }
 ```
 ---
--- over --If you can help, welcome[star & fork](https://github.com/alphayu/adnc).
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

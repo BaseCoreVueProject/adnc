@@ -119,3 +119,7 @@ CAP 的公共注册逻辑位于：
 - 事件处理方法执行了两次：检查是否做了幂等（MessageTracker）；检查去重表是否建立唯一索引；确认 handlerName 是否稳定（建议用 `nameof(Method)`）。
 - 事件发布成功但订阅端没反应：检查 `AddCapEventBus` 是否注册了订阅者；检查 RabbitMQ 与 MySQL 配置；检查 CAP 的 groupName（可理解为“消费组”）是否按环境区分。
 - 事件里该放哪些字段：只放“下游必须的数据”（通常是业务主键 + 关键数值），需要更多信息时由下游再查库，不要把整个对象塞进事件里。
+
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

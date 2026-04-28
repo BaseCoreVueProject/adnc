@@ -186,6 +186,6 @@ Task<ApiResponse<List<string>>> GetCurrenUserPermissionsAsync(long userId, [Quer
 [Headers("Authorization: Basic", "Cache: 2000")]
 Task<ApiResponse<List<DeptRto>>> GeDeptsAsync();
 ```
-—— 完 ——
+----
 
 如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

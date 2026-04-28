@@ -283,6 +283,4 @@ public abstract class BaseRepository<TDbContext, TEntity> : IEfRepository<TEntit
 基于 Mycat 的代码实现如上，数据库连接字符串与直连数据库一致，仅需将端口改为 Mycat 的端口。
 
 ---
-—— 完 ——
-
 如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

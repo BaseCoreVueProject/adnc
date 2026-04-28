@@ -185,6 +185,6 @@ Require the server to use Basic authentication:
 Task<ApiResponse<List<DeptRto>>> GeDeptsAsync();
 ```
 
--- over --
+----
 
-If this helps, welcome to [star and fork](https://github.com/alphayu/adnc).
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

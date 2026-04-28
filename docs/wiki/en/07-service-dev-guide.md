@@ -59,3 +59,7 @@ Contracts/
 
 - [Service layer development documentation](https://aspdotnetcore.net/docs/application-service/)
 - For details, see the Application layer implementations in each Demo service.
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

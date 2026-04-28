@@ -62,7 +62,6 @@ The deployment scripts include examples as comments, for example:
 The core step is to add two environment variables to the container:
 
 - `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=SkyAPM.Agent.AspNetCore`: enables the agent.
-- `SKYWALKING__SERVICENAME=xxx`: overrides `SkyWalking:ServiceName`.
 
 ## 5. CAP and Redis Trace Supplement (Optional)
 
@@ -82,3 +81,7 @@ In the UI, you will usually see:
 - Whether the service actually has the agent enabled: Confirm that the runtime environment variable `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES` contains `SkyAPM.Agent.AspNetCore`.
 - Whether the OAP address is reachable: Confirm that `SkyWalking:Transport:gRPC:Servers` points to an accessible address and port.
 - Logs: Check the log file specified by `SkyWalking:Logging:FilePath`, which defaults to `txtlogs\\skyapm-{Date}.log`.
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

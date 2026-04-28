@@ -59,3 +59,6 @@ Api/
 
 - 详见 Demo 各服务的 `Api/Controllers` 与对应的 `Application` 服务实现。
 
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

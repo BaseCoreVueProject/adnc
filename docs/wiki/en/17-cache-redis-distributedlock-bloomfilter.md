@@ -93,7 +93,7 @@ public interface IDistributedLocker
     /// <param name="cacheValue">The version.</param>
     /// <returns></returns>
     Task<bool> SafedUnLockAsync(string cacheKey, string cacheValue);
-
+    
     /// <summary>
     /// Acquires a distributed lock.
     /// </summary>
@@ -102,7 +102,7 @@ public interface IDistributedLocker
     /// <param name="autoDelay">Whether to renew the lock automatically.</param>
     /// <returns>Success indicates the lock acquisition status, and LockValue is the lock version.</returns>
     (bool Success, string LockValue) Lock(string cacheKey, int timeoutSeconds = 5, bool autoDelay = true);
-
+    
     /// <summary>
     /// Releases the lock safely.
     /// </summary>
@@ -716,4 +716,4 @@ namespace Adnc.Usr.Application.Services
 - Database synchronization with MQ.If your business scenario requires implementing the above functions, Alibaba's open source canal may be a better choice. Using canal can organize business code elegantly and conveniently.
 
 ---
--- over --If you can help, welcome[star & fork](https://github.com/alphayu/adnc).
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

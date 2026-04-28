@@ -147,3 +147,6 @@ gRPC 调用时通常通过 `Metadata` 传递 Header。Demo 做法是“只传 Sc
 - 401/鉴权失败：确认调用时传入了 `GrpcClientConsts.BasicHeader` 或 `GrpcClientConsts.BearerHeader`；确认 `Basic` 配置一致；若使用 Bearer，确认入站请求携带 Bearer Token。
 - Consul 模式找不到服务：确认 `RpcInfo:Address[].Service` 与 `ServiceAddressConsts.*` 一致，且服务已注册。
 
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

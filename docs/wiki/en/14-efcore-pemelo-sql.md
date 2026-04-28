@@ -67,4 +67,6 @@ public class xxxAppService
 }
 ```
 
--- over --If you can help, welcome[star & fork](https://github.com/alphayu/adnc).
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

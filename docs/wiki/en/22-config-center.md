@@ -93,19 +93,23 @@ Notes:
 
 This repository provides Consul deployment and KV initialization scripts for the staging environment:
 
-- Consul Compose: `doc/devops-staging/adnc-consul/docker-compose.yml`
-- KV initialization script: `doc/devops-staging/adnc-consul/consul-init.sh`
-- Initial KV data: `doc/devops-staging/adnc-consul/kv.json`
+- Consul Compose: `deploy/staging/adnc-consul/docker-compose.yml`
+- KV initialization script: `deploy/staging/adnc-consul/consul-init.sh`
+- Initial KV data: `deploy/staging/adnc-consul/kv.json`
 
 After the script starts, it runs `consul kv import ... @/consul/kv.json` to import the initial KV values.
 
 Notes:
 
 - The `value` field in `kv.json` is base64 encoded, as required by Consul's import format. After import, Consul stores the decoded JSON content.
-- The Compose file exposes the Consul UI on host port `8590` by default (`doc/devops-staging/adnc-consul/docker-compose.yml`).
+- The Compose file exposes the Consul UI on host port `8590` by default (`deploy/staging/adnc-consul/docker-compose.yml`).
 
 ## 6. FAQ
 
 - Startup reports that Consul configuration cannot be found: Check whether `ConfigurationType` is `Consul`; check whether `ConsulUrl` is accessible; check whether `ConsulKeyPath` has a corresponding key.
 - Configuration changes do not take effect: Confirm that the correct key was modified; wait 3 to 5 seconds; check the service logs; confirm whether the configuration item requires restart to take effect.
 - Shared and service-specific configuration conflict: Confirm the loading order, where service-specific configuration should come last. Try to override only necessary items in service-specific configuration instead of redefining many nodes.
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

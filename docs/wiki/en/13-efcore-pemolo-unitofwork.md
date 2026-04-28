@@ -77,5 +77,4 @@ public class xxxAppService
 
 ----
 
--
--- over --If you can help, please feel free to Star & Fork.
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

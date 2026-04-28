@@ -26,21 +26,21 @@ docker network create \
 
 ## 4. Upload the Middleware Deployment YAML Files
 
-Upload the local `adnc\doc\devops-staging` folder to `/opt/adnc` on the server.
+Upload the local `adnc\staging` folder to `/opt/adnc` on the server.
 
 After upload, the server directory structure should be:
 
 ```bash
 opt
 └── adnc
-    ├── devops-staging
+    ├── staging
     └── src
 ```
 
 ## 5. Start Middleware Containers
 
 ```bash
-cd /opt/adnc/devops-staging
+cd /opt/adnc/staging
 docker compose up -d
 ```
 
@@ -90,7 +90,7 @@ adnc
 │   ├── deploy_ocelot.sh
 │   ├── Directory.Packages.props
 │   └── Directory.Build.props
-└── devops-staging
+└── staging
 ```
 
 ## 8. Run Microservice Deployment Scripts
@@ -113,9 +113,12 @@ bash deploy_ocelot.sh
 pnpm run build
 ```
 
-- After `build` succeeds, upload the files in the `dist` directory to `/opt/adnc/devops-staging/adnc-nginx/html`.
+- After `build` succeeds, upload the files in the `dist` directory to `/opt/adnc/staging/adnc-nginx/html`.
 - Visit `http://{server-ip}` and log in to check whether the system was deployed successfully.
 
 ## 11. Conclusion
 
 At this point, `ADNC` has been deployed.
+
+------
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

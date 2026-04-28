@@ -447,3 +447,7 @@ public class StudentController(IStudentService studentService) : AdncControllerB
 ## 4. 总结
 
 综上所述，按照上述流程可在 ADNC 架构下规范、高效地实现 Student 实体的完整功能。开发过程中需注意：所有写操作在业务校验失败时统一返回 Problem，不抛出异常，确保业务异常处理一致、前后端交互友好，从而提升系统的可维护性与扩展性。
+
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

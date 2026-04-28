@@ -17,7 +17,7 @@ ADNC is an open-source distributed/microservices framework based on `.NET 8`, an
 - Authentication and authorization, logging, distributed tracing, health checks, metrics
 - Caching, message queues, event bus, distributed transactions, read/write splitting
 
-It provides a project structure and infrastructure integrations that can be used directly in real projects (see `README_ZH.md`).
+It provides a project structure and infrastructure integrations that can be used directly in real projects (see `README.md`).
 
 ---
 
@@ -25,7 +25,7 @@ It provides a project structure and infrastructure integrations that can be used
 
 ## 1.1 Code Directory Overview
 
-The main body of the repository is under `src` (see `README_ZH.md` for details):
+The main body of the repository is under `src` (see `README.md` for details):
 
 - `src/Infrastructures`: Infrastructure integrations, such as Consul, EventBus, caching, and so on.
 - `src/ServiceShared`: Common service layer, such as WebApi startup encapsulation, remote call encapsulation, common middleware, and so on.
@@ -34,7 +34,7 @@ The main body of the repository is under `src` (see `README_ZH.md` for details):
 
 ## 1.2 The "Demonstration Value" of the Demo Services
 
-The demos are not just "runnable samples." More importantly, they demonstrate that under the same infrastructure and conventions, services can organize code with different levels of complexity (see `README_ZH.md` for details):
+The demos are not just "runnable samples." More importantly, they demonstrate that under the same infrastructure and conventions, services can organize code with different levels of complexity (see `README.md` for details):
 
 - Admin: classic three-layer architecture + contract separation
 - Maint: more compact three-layer architecture
@@ -152,3 +152,7 @@ You can:
 
 - use it as a starting point for "building a microservices foundation from scratch";
 - or take only part of it (such as remote call encapsulation, configuration/registry center integration, or event-driven templates) and integrate it into your existing system.
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

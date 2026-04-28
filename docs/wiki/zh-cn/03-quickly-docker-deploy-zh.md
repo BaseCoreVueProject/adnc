@@ -121,3 +121,7 @@ pnpm run build
 ## 11. 结语
 
 至此，`ADNC` 已完成部署。
+
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

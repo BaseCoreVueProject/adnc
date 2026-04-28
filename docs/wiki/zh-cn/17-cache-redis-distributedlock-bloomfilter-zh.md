@@ -703,6 +703,4 @@ namespace Adnc.Usr.Application.Services
 如果您的业务场景需要实现上面的这些功能，阿里开源的canal或许是比较好的选择。使用canal能优雅更方便的组织业务代码。
 
 ---
-—— 完 ——
-
 如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

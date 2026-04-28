@@ -165,7 +165,9 @@ When `RegisterType = Consul`, configure `RpcInfo:Address[*]:Consul` in service-n
 
 The repository provides Consul docker-compose files and initialization scripts, including KV initialization. They can also be used directly as a registry center:
 
-- `doc/devops-staging/adnc-consul/docker-compose.yml`
-- `doc/devops-staging/adnc-consul/consul-init.sh`
-- `doc/devops/docker-compose/adnc-consul/docker-compose.yml`
-- `doc/devops/docker-compose/adnc-consul/consul-init.sh`
+- `deploy/staging/adnc-consul/docker-compose.yml`
+- `deploy/staging/adnc-consul/consul-init.sh`
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

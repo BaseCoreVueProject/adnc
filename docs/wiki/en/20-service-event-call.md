@@ -123,3 +123,7 @@ Taking Demo recharge as an example, the flow can be understood as:
 - The event handler runs twice: Check whether idempotency (`MessageTracker`) is implemented; check whether a unique index exists in the deduplication table; confirm that `handlerName` is stable. `nameof(Method)` is recommended.
 - The event is published successfully but the subscriber does not respond: Check whether `AddCapEventBus` registered the subscriber; check RabbitMQ and MySQL configuration; check whether CAP `groupName` (consumer group) is separated by environment.
 - Which fields should be included in the event: Include only data required by downstream services, usually the business primary key plus key values. When more information is needed, downstream services can query the database. Do not put the entire object into the event.
+
+----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).

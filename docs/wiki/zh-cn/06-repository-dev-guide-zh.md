@@ -59,3 +59,6 @@ Repository/
 - EF Core 仓储与工作单元：参见 `docs/wiki/zh-cn/efcore-pemelo-curd-zh.md` 与 `docs/wiki/zh-cn/efcore-pemolo-unitofwork-zh.md`。
 - 原生 SQL 能力：参见 `docs/wiki/zh-cn/efcore-pemelo-sql-zh.md`。
 
+----
+
+如有帮助，欢迎 [star & fork](https://github.com/alphayu/adnc)。

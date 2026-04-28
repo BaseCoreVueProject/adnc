@@ -444,3 +444,7 @@ public class StudentController(IStudentService studentService) : AdncControllerB
 ## 4. Summary
 
 Following the process above, the complete Student entity functionality can be implemented consistently and efficiently under the ADNC architecture. During development, note that all write operations should return Problem consistently when business validation fails, rather than throwing exceptions. This keeps business exception handling consistent and front-end/back-end interactions predictable, improving maintainability and scalability.
+
+-----
+
+If you can help, welcome [star & fork](https://github.com/alphayu/adnc).
