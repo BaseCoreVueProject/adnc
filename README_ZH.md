@@ -14,7 +14,7 @@
 
 ###### <div align="center">代码改变世界，开源推动社区</div>
 
-[中文](./README_ZH.md)  [English](./README.md)
+[简体中文](./README_ZH.md)  [English](./README.md)
 
 ## 简介
 
