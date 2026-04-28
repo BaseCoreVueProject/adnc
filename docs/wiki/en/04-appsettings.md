@@ -2,7 +2,9 @@
 
 [GitHub repository](https://github.com/alphayu/adnc)
 
-## 1. Service public configuration> `adnc\src\Demo\Shared\resources\appsettings.shared.Development.json`
+## 1. Service public configuration
+
+`adnc\src\Demo\Shared\resources\appsettings.shared.Development.json`
 
 ## 1.1 RegisterType
 
@@ -38,15 +40,15 @@
 - Service call configuration information:
   
 - `Polly:Enable`: Whether to enable the`Polly`policy
-    
+  
 - `true`: enabled
-    
+  
 - `false`: Disabled
   
 - `Address`: Service address configuration
-    
+  
 - `Service`: Service name
-    
+  
 - `Direct`: Service address at`RegisterType = Direct`
 - `Consul`: Service address at`RegisterType = Consul`
 - `CoreDns`: Service address at`RegisterType = CoreDns`
@@ -118,15 +120,15 @@
 - `PollyTimeoutSeconds`: Polly timeout, used for cache and database synchronization compensation mechanism
   
 - `PenetrationSetting`: Cache penetration protection related configurations
-    
+  
 - `Disable`: Whether to disable penetration protection
-    
+  
 - `BloomFilterSetting`: Bloom filter configuration
-      
+  
 - `Name`: Bloom filter name
-      
+  
 - `Capacity`: Capacity
-      
+  
 - `ErrorRate`: False positive rate
 
 ```json
@@ -395,10 +397,6 @@ public static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder 
 }
 ```
 
--
-
 ----
 
--
-
--- over --If you can help, please feel free to Star & Fork.
+- over --If you can help, please feel free to Star & Fork.
