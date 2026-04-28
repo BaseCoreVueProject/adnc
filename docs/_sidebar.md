@@ -34,8 +34,8 @@
   * [Consul service registry](/wiki/en/23-registry-center)
 
 * Architecture
-  * [Overall architecture diagram](/architecture/adnc-overall-architecture.svg)
-  * [ADR-001: Modular monolith first](/architecture/adr/ADR-001-modular-monolith-first)
+  * Overall architecture diagram
+  * ADR-001: Modular monolith first
 
 * Language
   * [中文文档](/README_ZH)

@@ -34,8 +34,8 @@
   * [Consul 注册中心](/wiki/zh-cn/23-registry-center-zh)
 
 * 架构
-  * [整体架构图](/architecture/adnc-overall-architecture.svg)
-  * [ADR-001: 模块化单体优先](/architecture/adr/ADR-001-modular-monolith-first)
+  * 整体架构图
+  * ADR-001: 模块化单体优先
 
 * Language
   * [English Documentation](/README)
