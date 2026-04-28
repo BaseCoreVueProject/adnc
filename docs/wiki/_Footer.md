@@ -1,3 +1,0 @@
-- Official Website: [https://aspdotnetcore.net](https://aspdotnetcore.net)
-- Online Demo: [https://online.aspdotnetcore.net](https://online.aspdotnetcore.net)
-- Code Generator: [https://code.aspdotnetcore.net](https://code.aspdotnetcore.net)
