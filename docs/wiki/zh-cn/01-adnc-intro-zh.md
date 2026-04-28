@@ -54,9 +54,9 @@ Demo 不只是“能跑的样例”，更重要的是它在演示：同一套基
 3. 服务通过统一中间件处理异常、鉴权、CORS、Swagger、健康检查等通用流程，这部分由 `ServiceShared` 复用。
 4. 业务代码在 Application 层负责“编排”：查库、写库、调用缓存、发事件，必要时再同步调用其他服务。
 5. 服务间通信通常有三种方式：
-   - HTTP（Refit）：见 `docs/wiki/service-http-call-zh.md`
-   - gRPC：见 `docs/wiki/service-grpc-call-zh.md`
-   - 事件（CAP）：见 `docs/wiki/service-event-call-zh.md`
+   - HTTP（Refit）：见 `docs/wiki/zh-cn/service-http-call-zh.md`
+   - gRPC：见 `docs/wiki/zh-cn/service-grpc-call-zh.md`
+   - 事件（CAP）：见 `docs/wiki/zh-cn/service-event-call-zh.md`
 
 你可以把 ADNC 理解为：**把每个服务里都会重复写的那堆胶水代码，集中沉淀到 `Infrastructures/ServiceShared`，让业务代码更专注于业务本身。**
 
@@ -66,14 +66,14 @@ Demo 不只是“能跑的样例”，更重要的是它在演示：同一套基
 
 ### 3.1 配置中心（ConfigurationType）
 
-用于“加载配置”。支持本地文件和 Consul KV（详见 `docs/wiki/config-center-zh.md`）：
+用于“加载配置”。支持本地文件和 Consul KV（详见 `docs/wiki/zh-cn/config-center-zh.md`）：
 
 - `File`：加载运行目录下的 shared appsettings
 - `Consul`：从 Consul KV 加载，默认会轮询刷新，并替换 `$SERVICENAME/$SHORTNAME/$RELATIVEROOTPATH` 这些占位符
 
 ### 3.2 注册中心（RegisterType）
 
-用于“服务注册与发现”。支持 `Direct/Consul/CoreDns`（配置说明见 `docs/wiki/appsettings-zh.md`，使用介绍见 `docs/wiki/registry-center-zh.md`）：
+用于“服务注册与发现”。支持 `Direct/Consul/CoreDns`（配置说明见 `docs/wiki/zh-cn/appsettings-zh.md`，使用介绍见 `docs/wiki/zh-cn/registry-center-zh.md`）：
 
 - `Direct`：开发时最直观，直接写死 URL
 - `Consul`：服务启动时注册，调用时按服务名发现实例
@@ -84,36 +84,36 @@ Demo 不只是“能跑的样例”，更重要的是它在演示：同一套基
 建议的使用原则很简单，也最实用：
 
 - **查询/校验**：用 HTTP 或 gRPC，同步拿结果，链路尽量短  
-  - HTTP：`docs/wiki/service-http-call-zh.md`
-  - gRPC：`docs/wiki/service-grpc-call-zh.md`
+  - HTTP：`docs/wiki/zh-cn/service-http-call-zh.md`
+  - gRPC：`docs/wiki/zh-cn/service-grpc-call-zh.md`
 - **跨服务写协作/最终一致性**：优先用事件，便于解耦，也能减少调用链  
-  - CAP：`docs/wiki/service-event-call-zh.md`
+  - CAP：`docs/wiki/zh-cn/service-event-call-zh.md`
 
 ### 3.4 认证授权
 
-ADNC 在“服务互调”场景下提供了更工程化的做法：既支持 Basic，也支持 Bearer 透传，减少业务代码对 Token 处理的重复劳动（见 `docs/wiki/claims-based-authentication-zh.md`）。
+ADNC 在“服务互调”场景下提供了更工程化的做法：既支持 Basic，也支持 Bearer 透传，减少业务代码对 Token 处理的重复劳动（见 `docs/wiki/zh-cn/claims-based-authentication-zh.md`）。
 
 ### 3.5 缓存、分布式锁、布隆过滤器
 
-缓存相关能力（包括防雪崩、击穿、穿透这些常见问题的处理方式）集中在一篇文档里，适合直接照着落地（见 `docs/wiki/cache-redis-distributedlock-bloomfilter-zh.md`）。
+缓存相关能力（包括防雪崩、击穿、穿透这些常见问题的处理方式）集中在一篇文档里，适合直接照着落地（见 `docs/wiki/zh-cn/cache-redis-distributedlock-bloomfilter-zh.md`）。
 
 ### 3.6 数据访问与事务（EF Core + UnitOfWork）
 
-仓储、工作单元、本地事务/分布式事务、原生 SQL 等，都有对应的 Demo 和文档（可以先从 `docs/wiki/efcore-*.md` 系列开始）。
+仓储、工作单元、本地事务/分布式事务、原生 SQL 等，都有对应的 Demo 和文档（可以先从 `docs/wiki/zh-cn/efcore-*.md` 系列开始）。
 
 ### 3.7 可观测性与运维友好（日志 / 链路 / 健康检查）
 
 在微服务里，“能看见、好排查”往往比“能写代码”更重要。ADNC 已经把很多基础能力做成统一接入点：
 
-- 链路追踪：SkyAPM（SkyWalking .NET Agent），开启方式见 `docs/wiki/skyapm-tracing-zh.md`。
+- 链路追踪：SkyAPM（SkyWalking .NET Agent），开启方式见 `docs/wiki/zh-cn/skyapm-tracing-zh.md`。
 - 健康检查：服务默认会暴露健康检查端点，也可以配合 Consul 做健康探测（注册中心部分也会用到）。
-- 日志与审计：项目有统一的日志配置和输出方式（可以从 `docs/wiki/appsettings-zh.md` 的 Logging 节点开始理解）。
+- 日志与审计：项目有统一的日志配置和输出方式（可以从 `docs/wiki/zh-cn/appsettings-zh.md` 的 Logging 节点开始理解）。
 
 ---
 
 ## 4. 本地如何跑起来（最少需要改哪些东西）
 
-如果你只想先“跑起来看看”，按 `docs/wiki/quickstart-zh.md` 的顺序就可以。核心就三件事：
+如果你只想先“跑起来看看”，按 `docs/wiki/zh-cn/quickstart-zh.md` 的顺序就可以。核心就三件事：
 
 1. 通用配置：`src/Demo/Shared/resources/appsettings.shared.Development.json`（Redis、RabbitMQ 等）。
 2. 各服务私有配置：`src/Demo/*/Api/appsettings.Development.json`（数据库连接串、端口等）。
@@ -132,15 +132,15 @@ ADNC 在“服务互调”场景下提供了更工程化的做法：既支持 Ba
 
 如果你希望“看懂之后能改，改了之后还能稳”，建议按这个顺序读：
 
-1. `docs/wiki/quickstart-zh.md`：先跑起来
-2. `docs/wiki/appsettings-zh.md`：弄清楚关键配置节点
-3. `docs/wiki/config-center-zh.md`：配置中心（如果你有多环境/统一下发的需求）
-4. `docs/wiki/registry-center-zh.md`：注册中心（如果你要做真实的服务发现和负载均衡）
-5. `docs/wiki/service-http-call-zh.md` / `docs/wiki/service-grpc-call-zh.md`：同步调用怎么写、鉴权怎么带、地址怎么配
-6. `docs/wiki/service-event-call-zh.md`：事件驱动怎么做幂等、怎么处理事务与重试
-7. `docs/wiki/feature-dev-guide-zh.md` + `docs/wiki/api-dev-guide-zh.md` + `docs/wiki/service-dev-guide.md`：跟着规范新增一个 CRUD
-8. 需要排查性能或调用链时读 `docs/wiki/skyapm-tracing-zh.md`
-9. 需要部署到服务器或容器时读 `docs/wiki/quickly-docker-deploy-zh.md`
+1. `docs/wiki/zh-cn/quickstart-zh.md`：先跑起来
+2. `docs/wiki/zh-cn/appsettings-zh.md`：弄清楚关键配置节点
+3. `docs/wiki/zh-cn/config-center-zh.md`：配置中心（如果你有多环境/统一下发的需求）
+4. `docs/wiki/zh-cn/registry-center-zh.md`：注册中心（如果你要做真实的服务发现和负载均衡）
+5. `docs/wiki/zh-cn/service-http-call-zh.md` / `docs/wiki/zh-cn/service-grpc-call-zh.md`：同步调用怎么写、鉴权怎么带、地址怎么配
+6. `docs/wiki/zh-cn/service-event-call-zh.md`：事件驱动怎么做幂等、怎么处理事务与重试
+7. `docs/wiki/zh-cn/feature-dev-guide-zh.md` + `docs/wiki/zh-cn/api-dev-guide-zh.md` + `docs/wiki/zh-cn/service-dev-guide.md`：跟着规范新增一个 CRUD
+8. 需要排查性能或调用链时读 `docs/wiki/zh-cn/skyapm-tracing-zh.md`
+9. 需要部署到服务器或容器时读 `docs/wiki/zh-cn/quickly-docker-deploy-zh.md`
 
 ---
 

@@ -24,7 +24,7 @@
 
 本项目中：
 
-- **配置中心** 用 `ConfigurationType` 控制（`File/Consul/...`），用于“加载 appsettings 配置”。详见 `docs/wiki/config-center-zh.md`。
+- **配置中心** 用 `ConfigurationType` 控制（`File/Consul/...`），用于“加载 appsettings 配置”。详见 `docs/wiki/zh-cn/config-center-zh.md`。
 - **注册中心** 用 `RegisterType` 控制（`Direct/Consul/CoreDns`），用于“服务启动时注册 + 服务间调用时发现”。
 
 两者可以配合使用：

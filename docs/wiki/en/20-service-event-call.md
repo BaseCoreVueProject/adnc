@@ -4,7 +4,7 @@
 
 In microservices, cross-service collaboration should often use event-driven communication in addition to synchronous calls (HTTP/gRPC): one service publishes what happened, and other services subscribe and process it as needed. This reduces coupling, shortens call chains, and makes eventual consistency easier to implement.
 
-This article uses `src/Demo/Cust/Api/Application/Subscribers/CustomerRechargedEventSubscriber.cs` as an example to introduce event publishing and subscription in ADNC based on CAP (DotNetCore.CAP), and contrasts it with synchronous calls such as `docs/wiki/service-http-call-zh.md`.
+This article uses `src/Demo/Cust/Api/Application/Subscribers/CustomerRechargedEventSubscriber.cs` as an example to introduce event publishing and subscription in ADNC based on CAP (DotNetCore.CAP), and contrasts it with synchronous calls such as `docs/wiki/en/service-http-call.md`.
 
 ---
 

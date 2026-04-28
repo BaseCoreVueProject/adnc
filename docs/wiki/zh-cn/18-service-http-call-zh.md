@@ -66,7 +66,7 @@ src/Demo/Shared/Remote.Http/
 
 ### 4.3 Basic 配置
 
-Basic 认证所需配置位于 `appsettings.shared.{Environment}.json`（示例路径见 `docs/wiki/quickstart-zh.md`），典型配置如下：
+Basic 认证所需配置位于 `appsettings.shared.{Environment}.json`（示例路径见 `docs/wiki/zh-cn/quickstart-zh.md`），典型配置如下：
 
 ```json
 "Basic": {

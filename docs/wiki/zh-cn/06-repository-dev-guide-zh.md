@@ -55,7 +55,7 @@ Repository/
 
 ## 8. 参考实现
 
-- 实体/映射/迁移示例：参见 `docs/wiki/feature-dev-guide-zh.md`。
-- EF Core 仓储与工作单元：参见 `docs/wiki/efcore-pemelo-curd-zh.md` 与 `docs/wiki/efcore-pemolo-unitofwork-zh.md`。
-- 原生 SQL 能力：参见 `docs/wiki/efcore-pemelo-sql-zh.md`。
+- 实体/映射/迁移示例：参见 `docs/wiki/zh-cn/feature-dev-guide-zh.md`。
+- EF Core 仓储与工作单元：参见 `docs/wiki/zh-cn/efcore-pemelo-curd-zh.md` 与 `docs/wiki/zh-cn/efcore-pemolo-unitofwork-zh.md`。
+- 原生 SQL 能力：参见 `docs/wiki/zh-cn/efcore-pemelo-sql-zh.md`。
 

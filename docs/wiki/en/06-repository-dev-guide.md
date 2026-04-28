@@ -55,6 +55,6 @@ Repository/
 
 ## 8. Reference Implementation
 
-- Entity, mapping, and migration example: see `docs/wiki/feature-dev-guide-zh.md`.
-- EF Core repository and unit of work: see `docs/wiki/efcore-pemelo-curd-zh.md` and `docs/wiki/efcore-pemolo-unitofwork-zh.md`.
-- Raw SQL capability: see `docs/wiki/efcore-pemelo-sql-zh.md`.
+- Entity, mapping, and migration example: see `docs/wiki/en/feature-dev-guide.md`.
+- EF Core repository and unit of work: see `docs/wiki/en/efcore-pemelo-curd.md` and `docs/wiki/en/efcore-pemolo-unitofwork.md`.
+- Raw SQL capability: see `docs/wiki/en/efcore-pemelo-sql.md`.

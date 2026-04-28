@@ -24,7 +24,7 @@ This project supports multiple service registration and discovery modes, control
 
 In this project:
 
-- **Configuration Center** is controlled by `ConfigurationType` (`File/Consul/...`) and is used to load appsettings configuration. See `docs/wiki/config-center-zh.md`.
+- **Configuration Center** is controlled by `ConfigurationType` (`File/Consul/...`) and is used to load appsettings configuration. See `docs/wiki/en/config-center.md`.
 - **Registry Center** is controlled by `RegisterType` (`Direct/Consul/CoreDns`) and is used for service registration at startup and service discovery during inter-service calls.
 
 Both can be used together:
