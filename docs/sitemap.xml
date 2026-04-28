@@ -6,242 +6,242 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/README</loc>
+    <loc>https://alphayu.github.io/adnc/README</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/README_ZH</loc>
+    <loc>https://alphayu.github.io/adnc/README_ZH</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/01-adnc-intro</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/01-adnc-intro</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/02-quickstart</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/02-quickstart</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/03-quickly-docker-deploy</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/03-quickly-docker-deploy</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/04-appsettings</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/04-appsettings</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/05-feature-dev-guide</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/05-feature-dev-guide</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/06-repository-dev-guide</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/06-repository-dev-guide</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/07-service-dev-guide</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/07-service-dev-guide</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/08-api-dev-guide</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/08-api-dev-guide</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/09-claims-based-authentication</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/09-claims-based-authentication</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/10-efcore-pemelo-curd</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/10-efcore-pemelo-curd</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/11-efcore-pemelo-codefirst</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/11-efcore-pemelo-codefirst</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/12-efcore-pemelo-sqlserver</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/12-efcore-pemelo-sqlserver</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/13-efcore-pemolo-unitofwork</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/13-efcore-pemolo-unitofwork</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/14-efcore-pemelo-sql</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/14-efcore-pemelo-sql</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/15-maxsale-readwritesplit</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/15-maxsale-readwritesplit</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/16-snowflake-max_value-wokerid</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/16-snowflake-max_value-wokerid</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/17-cache-redis-distributedlock-bloomfilter</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/17-cache-redis-distributedlock-bloomfilter</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/18-service-http-call</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/18-service-http-call</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/19-service-grpc-call</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/19-service-grpc-call</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/20-service-event-call</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/20-service-event-call</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/21-skyapm-tracing</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/21-skyapm-tracing</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/22-config-center</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/22-config-center</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/en/23-registry-center</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/en/23-registry-center</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/01-adnc-intro-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/01-adnc-intro-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/02-quickstart-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/02-quickstart-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/03-quickly-docker-deploy-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/03-quickly-docker-deploy-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/04-appsettings-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/04-appsettings-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/05-feature-dev-guide-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/05-feature-dev-guide-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/06-repository-dev-guide-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/06-repository-dev-guide-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/07-service-dev-guide</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/07-service-dev-guide</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/08-api-dev-guide-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/08-api-dev-guide-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/09-claims-based-authentication-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/09-claims-based-authentication-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/10-efcore-pemelo-curd-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/10-efcore-pemelo-curd-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/11-efcore-pemelo-codefirst-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/11-efcore-pemelo-codefirst-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/12-efcore-pemelo-sqlserver-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/12-efcore-pemelo-sqlserver-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/13-efcore-pemolo-unitofwork-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/13-efcore-pemolo-unitofwork-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/14-efcore-pemelo-sql-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/14-efcore-pemelo-sql-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/15-maxsale-readwritesplit-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/15-maxsale-readwritesplit-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/16-snowflake-max_value-wokerid-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/16-snowflake-max_value-wokerid-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/17-cache-redis-distributedlock-bloomfilter-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/17-cache-redis-distributedlock-bloomfilter-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/18-service-http-call-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/18-service-http-call-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/19-service-grpc-call-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/19-service-grpc-call-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/20-service-event-call-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/20-service-event-call-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/21-skyapm-tracing-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/21-skyapm-tracing-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/22-config-center-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/22-config-center-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://alphayu.github.io/adnc/#/wiki/zh-cn/23-registry-center-zh</loc>
+    <loc>https://alphayu.github.io/adnc/wiki/zh-cn/23-registry-center-zh</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

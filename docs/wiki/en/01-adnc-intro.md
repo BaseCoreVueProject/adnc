@@ -1,4 +1,4 @@
-# ADNC Project Tour: A Practical .NET 8 Microservices/Distributed Engineering Practice
+# ADNC Project Tour: A pragmatic .NET 8 reference architecture for modular monoliths, distributed applications, and microservice systems
 
 [GitHub Repository](https://github.com/alphayu/adnc)
 

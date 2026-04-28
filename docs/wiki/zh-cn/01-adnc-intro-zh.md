@@ -1,4 +1,4 @@
-# ADNC 项目导览：一套可落地的 .NET 8 微服务/分布式工程实践
+# ADNC 项目导览：一套面向模块化单体、分布式应用及微服务系统的实用 .NET 8 参考架构
 
 [GitHub 仓库地址](https://github.com/alphayu/adnc)
 
