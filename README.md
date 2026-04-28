@@ -1,277 +1,337 @@
-# <div align="center"><img src="https://aspdotnetcore.net/wp-content/uploads/2023/04/adnc-github.png" alt="ADNC - Open Source Microservice Framework Based on the .NET Platform" style="zoom:50%;" /></div>
-<div align='center'>
-<a href="./LICENSE">
-<img alt="GitHub license" src="https://img.shields.io/github/license/AlphaYu/Adnc"/>
-</a>
-<a href="https://github.com/AlphaYu/Adnc/stargazers">
-<img alt="GitHub stars" src="https://img.shields.io/github/stars/AlphaYu/Adnc"/>
-</a>
-<a href="https://github.com/AlphaYu/Adnc/network">
-<img alt="GitHub forks" src="https://img.shields.io/github/forks/AlphaYu/Adnc"/>
-</a>
-<img alt="Visitors" src="https://komarev.com/ghpvc/?username=alphayu&color=red&label=Visitors"/>
+# <div align="center"><img src="./docs/assets/images/adnc-github.png" alt="ADNC A pragmatic .NET 8 reference architecture for modular monoliths, distributed applications, and microservice systems." style="zoom:50%;" /></div>
+
+<div align="center">
+  <a href="./LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/AlphaYu/Adnc"/></a>
+  <a href="https://github.com/AlphaYu/Adnc/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/AlphaYu/Adnc"/></a>
+  <a href="https://github.com/AlphaYu/Adnc/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/AlphaYu/Adnc"/></a>
+  <img alt="Visitors" src="https://komarev.com/ghpvc/?username=alphayu&color=red&label=Visitors"/>
 </div>
+<p align="center">
+  A pragmatic .NET 8 reference architecture for modular monoliths, distributed applications, and microservice systems.
+</p>
+<p align="center">
+  <a href="#why-adnc">Why ADNC</a> ·
+  <a href="#design-principles">Design Principles</a> ·
+  <a href="#architecture-at-a-glance">Architecture</a> ·
+  <a href="#getting-started">Getting Started</a> ·
+  <a href="#documentation">Documentation</a>
+</p>
+<p align="center">
+  <a href="./README_ZH.md">简体中文</a> · English
+</p>
 
-###### <div align="center">Code changes the world, and open source drives the community</div>
 
-[中文](./README_ZH.md)  [English](./README.md)
+## What Is ADNC?
 
-## Introduction
+`ADNC` is an open-source distributed application framework built on `.NET 8`. It brings together the infrastructure, conventions, and sample services that teams typically need when building production-grade business systems: gateway routing, service discovery, centralized configuration, authentication, inter-service communication, event-driven integration, persistence, caching, observability, resilience, and deployment support.
 
-### What is ADNC?
+The repository is both a framework and a working reference implementation. It includes reusable `Adnc.Infra.*` packages, shared service-layer packages, an Ocelot gateway, a multi-service demo domain, database scripts, Docker Compose infrastructure assets, and English/Chinese documentation.
 
-`ADNC` is an open-source distributed/microservice framework based on `.NET 8`, and it also works well for monolithic applications. It provides a practical set of infrastructure and engineering practices around service registration and discovery, configuration management, distributed tracing, load balancing, circuit breaking and fault tolerance, distributed transactions, distributed caching, message queues, `RPC` communication (`HTTP` / `gRPC`), authentication and authorization, read/write splitting, and logging. The repository also includes supporting documentation and sample code to help you understand the framework design and get started quickly.
+ADNC is intentionally not a one-size-fits-all template. It demonstrates how different service shapes can coexist in the same system: classic layered services, compact single-project services, and DDD-style services with explicit domain layers.
 
-### Why choose ADNC?
+## Why ADNC
 
-- Supports multiple service styles: classic layered architecture, `DDD`, and compact single-project service structures.
-- Ready-to-use infrastructure: pre-integrated solutions for configuration, service discovery, caching, messaging, authentication, and logging.
-- Good for both learning and real projects: the repository includes a full demo, supporting documentation, and a front-end example.
-- Open and extensible: released under the `MIT` license, so it can be customized, extended, and integrated into existing systems as needed.
+Distributed systems fail most often at the boundaries: service ownership, data consistency, configuration drift, operational visibility, authentication, and integration contracts. ADNC focuses on those boundaries instead of only scaffolding controllers and repositories.
 
-Whether you are building a new system from scratch or refactoring and evolving an existing one, ADNC can serve as a reusable engineering foundation and reference implementation.
+Use ADNC when you want:
 
-## Quick Start
+- A practical `.NET 8` architecture baseline for business applications.
+- A reference implementation for moving from modular monoliths toward microservices.
+- Consistent infrastructure abstractions across services without forcing identical project layouts.
+- Examples of HTTP, gRPC, and event-driven service integration in one repository.
+- A realistic demo that includes gateway, identity, persistence, cache, messaging, tracing, logs, and deployment assets.
+- Source code and documentation that can be studied, customized, or selectively adopted.
 
-It is recommended to start in this order:
+ADNC is not positioned as:
 
-1. Read the [Quick Start documentation](https://github.com/alphayu/adnc/wiki/02-quickstart)
-2. Open the solution with `src/Adnc.sln` or `src/Demo/Adnc.Demo.sln`
-3. If you need the front-end project, see the links at the end of this document
-4. If you need seed data, see the database script link at the end of this document
+- A black-box platform that hides .NET application architecture.
+- Generated code with no architectural intent.
+- A microservice-only template that requires every bounded context to be deployed independently from day one.
+- A benchmark report. Performance notes are scenario references, not guarantees.
 
-Before running the demo, prepare the `.NET 8 SDK` and the required infrastructure described in the quick start guide. For complete setup and local run instructions, refer directly to the quick start documentation.
+## Design Principles
 
-## Repository Layout / Architecture
+**Modular first, distributed when necessary**
 
-### Directory Structure
+Service boundaries should be explicit before deployment boundaries become expensive. ADNC supports modular service design and lets teams adopt distributed deployment where the operational cost is justified.
 
-```
+**Different domains deserve different shapes**
+
+Small CRUD-oriented services do not need the same structure as domain-heavy services. The demo intentionally includes multiple project styles so teams can make informed trade-offs.
+
+**Infrastructure is shared; business behavior is owned by services**
+
+Cross-cutting concerns such as authentication, caching, repository patterns, remote calls, events, logging, and health checks are centralized in reusable packages. Business logic remains in service-specific application and domain layers.
+
+**Operational concerns are part of the architecture**
+
+Configuration, discovery, tracing, logging, gateway routing, health checks, and deployment assets are treated as first-class concerns, not afterthoughts.
+
+**Prefer replaceable integrations**
+
+The project uses established .NET ecosystem components such as Ocelot, Consul, Refit, gRPC, EF Core, Dapper, CAP, RabbitMQ, Redis, Polly, NLog, SkyAPM, and HealthChecks. ADNC organizes these tools behind consistent conventions rather than reinventing them.
+
+## Architecture at a Glance
+
+![adnc-framework](./docs/assets/images/adnc_framework-e1682145003197.png)
+
+At a high level, ADNC is organized into four parts:
+
+| Layer                | Responsibility                                               |
+| -------------------- | ------------------------------------------------------------ |
+| Gateway              | Ocelot-based API gateway, routing, authentication integration, Consul provider, resilience policies |
+| Infrastructure       | Reusable packages for Consul, Redis, repositories, event bus, ID generation, helpers, and core primitives |
+| Shared Service Layer | Common application, domain, repository, remote-call, and web API building blocks |
+| Demo Services        | Business services that show layered, compact, and DDD-oriented service structures |
+
+### Infrastructure Packages
+
+The `src/Infrastructures` directory contains reusable packages under the `Adnc.Infra.*` namespace.
+
+| Area                                | Projects                                                     |
+| ----------------------------------- | ------------------------------------------------------------ |
+| Core primitives                     | `Adnc.Infra.Core`, `Adnc.Infra.Helper`                       |
+| Service discovery and configuration | `Adnc.Infra.Consul`                                          |
+| Event bus                           | `Adnc.Infra.EventBus`                                        |
+| ID generation                       | `Adnc.Infra.IdGenerater`                                     |
+| Redis                               | `Adnc.Infra.Redis`, `Adnc.Infra.Redis.Caching`               |
+| Repository abstraction              | `Adnc.Infra.Repository`                                      |
+| Repository implementations          | `Adnc.Infra.Repository.Dapper`, `Adnc.Infra.Repository.EfCore`, `Adnc.Infra.Repository.EfCore.MySql`, `Adnc.Infra.Repository.EfCore.SqlServer`, `Adnc.Infra.Repository.EfCore.MongoDB` |
+
+- NuGet: [packages matching `adnc.infra`](https://www.nuget.org/packages?q=adnc.infra)
+
+![ADNC infrastructure packages](./docs/assets/images/adnc-framework-2.png)
+
+### Shared Service Packages
+
+The `src/ServiceShared` directory contains reusable service-level building blocks under the `Adnc.Shared.*` namespace.
+
+| Area                         | Projects                                                     |
+| ---------------------------- | ------------------------------------------------------------ |
+| Shared constants and context | `Adnc.Shared`                                                |
+| Application layer            | `Adnc.Shared.Application`, `Adnc.Shared.Application.Contracts` |
+| Domain layer                 | `Adnc.Shared.Domain`                                         |
+| Repository layer             | `Adnc.Shared.Repository`                                     |
+| Remote calls                 | `Adnc.Shared.Remote`                                         |
+| Web API infrastructure       | `Adnc.Shared.WebApi`                                         |
+
+- NuGet: [packages matching `adnc.shared`](https://www.nuget.org/packages?q=adnc.shared)
+
+<img src="./docs/assets/images/adnc-framework-3.png" alt="ADNC shared service packages" style="zoom:80%;" />
+
+## Core Capabilities
+
+| Capability            | ADNC Direction                                               |
+| --------------------- | ------------------------------------------------------------ |
+| API gateway           | Ocelot gateway with routing, Consul integration, authentication, and Polly support |
+| Service discovery     | Consul-based registration and discovery                      |
+| Configuration         | Local environment settings plus Consul-backed configuration center |
+| Service communication | Refit-based HTTP clients and gRPC clients via `Grpc.Net.ClientFactory` |
+| Event integration     | CAP, RabbitMQ, integration event contracts, and event tracking support |
+| Persistence           | EF Core, Dapper, MySQL, SQL Server, and MongoDB-oriented infrastructure |
+| Transactions          | Unit of Work support and eventual consistency through CAP    |
+| Caching               | Redis provider, distributed cache abstraction, distributed locks, and Bloom filter support |
+| Security              | JWT authentication, authorization helpers, shared web API infrastructure |
+| Observability         | NLog, Loki target, SkyAPM/SkyWalking, HealthChecks, Prometheus-related packages |
+| Resilience            | Polly-based transient fault handling at gateway and service-call boundaries |
+| Engineering baseline  | Central Package Management, shared build props, editor configuration, solution slicing |
+
+## Technology Stack
+
+| Category                   | Technologies                                 |
+| -------------------------- | -------------------------------------------- |
+| Runtime                    | `.NET 8`                                     |
+| Gateway                    | Ocelot                                       |
+| Registry and configuration | Consul                                       |
+| Remote calls               | Refit, gRPC                                  |
+| Persistence                | EF Core, Dapper, MySQL, SQL Server, MongoDB  |
+| Messaging and consistency  | CAP, RabbitMQ                                |
+| Cache                      | Redis                                        |
+| Resilience                 | Polly                                        |
+| Logging and tracing        | NLog, Loki, SkyAPM, SkyWalking               |
+| Metrics and health         | Prometheus packages, AspNetCore HealthChecks |
+| API and validation         | Swashbuckle, FluentValidation                |
+| Mapping                    | AutoMapper                                   |
+
+## Repository Structure
+
+```text
 adnc
-├── .github
-│   └── workflows CI/CD scripts (GitHub Actions)
-├── doc Technical documentation
-├── src Source code
-│   ├── Infrastructures Infrastructure layer projects
-│   ├── ServiceShared Shared service layer projects
-│   ├── Gateways Ocelot gateway projects
-│   └── Demo Demo projects
-├── test Test-related projects
-├── .gitignore
+├── .github/                   GitHub Actions workflows
+├── database/                  Database initialization script
+├── deploy/                    Docker Compose assets for staging-like infrastructure
+├── docs/
+│   ├── architecture/          Architecture decision records
+│   └── wiki/                  English and Chinese documentation source
+├── src/
+│   ├── Infrastructures/       ADNC infrastructure packages
+│   ├── ServiceShared/         Shared service-layer building blocks
+│   ├── Gateways/              Ocelot gateway
+│   └── Demo/                  Demo microservices
+├── test/                      Test-related projects
 ├── README.md
+├── README_ZH.md
 └── LICENSE
 ```
 
-### Important Files
+## Important Solutions
 
-| Path | Description |
-| --- | --- |
-| `src/Adnc.sln` | The solution containing all `adnc` projects |
-| `src/Infrastructures/Adnc.Infra.sln` | The solution containing only infrastructure-related projects |
-| `src/ServiceShared/Adnc.Shared.sln` | The solution containing only shared service layer projects |
-| `src/Demo/Adnc.Demo.sln` | The solution containing only demo-related projects |
-| `src/.editorconfig` | Cross-editor configuration used to keep code style consistent across Visual Studio, VS Code, and JetBrains Rider |
-| `src/Directory.Build.props` | Centralized common build properties such as target frameworks, language version, and output paths |
-| `src/Directory.Packages.props` | Central Package Management (CPM) file used to manage NuGet package versions across the solution |
+| Path                                  | Purpose                                              |
+| ------------------------------------- | ---------------------------------------------------- |
+| `src/Adnc.sln`                        | Main solution containing the ADNC framework projects |
+| `src/Infrastructures/Adnc.Infra.sln`  | Infrastructure-only solution                         |
+| `src/ServiceShared/Adnc.Shared.sln`   | Shared service-layer solution                        |
+| `src/Demo/Adnc.Demo.sln`              | Demo service solution                                |
+| `src/Gateways/Ocelot/Adnc.Ocelot.sln` | Ocelot gateway solution                              |
 
-### Overall Architecture Diagram
+Build configuration is centralized through:
 
-<img src="https://aspdotnetcore.net/wp-content/uploads/2023/04/adnc_framework-e1682145003197.png" alt="adnc_framework"/>
+- `src/Directory.Build.props`: shared build settings, including `net8.0`, nullable reference types, implicit usings, package metadata, and documentation generation.
+- `src/Directory.Packages.props`: Central Package Management for NuGet versions.
+- `src/.editorconfig`: cross-editor code style configuration.
 
-#### Adnc.Infra.*
+## Getting Started
 
-[NuGet Gallery | Packages matching adnc.infra](https://www.nuget.org/packages?q=adnc.infra)
+The fastest way to get started is to follow the quick start guide. The demo requires infrastructure such as Consul, Redis, RabbitMQ, MySQL, logging components, and service configuration, so the startup sequence matters.
 
-![adnc-framework-2](https://aspdotnetcore.net/wp-content/uploads/2023/04/adnc-framework-2.png)
+1. Install the `.NET 8 SDK`.
+2. Read the [ADNC Quick Start Guide](https://docs.aspdotnetcore.net/adnc/02-quickstart).
+3. Open `src/Adnc.sln` for framework packages or `src/Demo/Adnc.Demo.sln` for demo services.
+4. Prepare infrastructure from the quick start guide or the Docker Compose assets in `docs/devops-staging`.
+5. Initialize demo data from [`database/mysql/adnc.sql`](./database/mysql/adnc.sql).
+6. Start the gateway and demo services in the documented order.
 
-#### Adnc.Shared.*
+For Docker-oriented setup, use the [Quick Docker Deployment Guide](https://docs.aspdotnetcore.net/adnc/03-quickly-docker-deploy).
 
-[NuGet Gallery | Packages matching adnc.shared](https://www.nuget.org/packages?q=adnc.shared)
+## Demo Domain
 
-<img src="https://aspdotnetcore.net/wp-content/uploads/2023/04/adnc-framework-3.png" alt="adnc-framework-3" style="zoom:80%;" />
+The demo contains five business services and shared cross-service contracts. Each service uses a different structure to make the architectural trade-offs visible.
 
-### Tech Stack
+| Service | Business Scope                                               | Architecture Style                                           |
+| ------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Admin   | Organization, users, roles, permissions, dictionaries, and configuration | Classic layered architecture with separated application contracts |
+| Maint   | Logs, audits, and operations management                      | Classic layered architecture with contracts merged into the application layer |
+| Cust    | Customer management                                          | Minimal single-project service                               |
+| Ord     | Order management                                             | DDD-style service with a domain layer                        |
+| Whse    | Warehouse management                                         | DDD-style service with a domain layer                        |
 
-| Name | Description |
-| --- | --- |
-| <a target="_blank" href="https://github.com/ThreeMammals/Ocelot">Ocelot</a> | Open-source gateway built on .NET |
-| <a target="_blank" href="https://github.com/hashicorp/consul">Consul</a> | Configuration center and service registry |
-| <a target="_blank" href="https://github.com/reactiveui/refit">Refit</a> | Declarative and type-safe REST client library |
-| <a target="_blank" href="https://github.com/grpc/grpc-dotnet">Grpc.Net.ClientFactory</a><br />Grpc.Tools | gRPC communication framework |
-| <a target="_blank" href="https://github.com/SkyAPM/SkyAPM-dotnet">SkyAPM.Agent.AspNetCore</a> | SkyWalking .NET agent for tracing and performance monitoring |
-| <a target="_blank" href="https://github.com/castleproject/Core">Castle DynamicProxy</a> | Dynamic proxy and AOP component |
-| <a target="_blank" href="https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql">Pomelo.EntityFrameworkCore.MySql</a> | EF Core ORM provider |
-| <a target="_blank" href="https://github.com/StackExchange/Dapper">Dapper</a> | Lightweight ORM |
-| <a target="_blank" href="https://github.com/NLog/NLog">NLog</a><br />NLog.MongoDB<br />NLog.Loki | Logging components |
-| <a target="_blank" href="https://github.com/AutoMapper/AutoMapper">AutoMapper</a> | Object-object mapping library |
-| <a target="_blank" href="https://github.com/domaindrivendev/Swashbuckle.AspNetCore">Swashbuckle.AspNetCore</a> | Swagger-based API documentation generator |
-| <a target="_blank" href="https://github.com/StackExchange/StackExchange.Redis">StackExchange.Redis</a> | Redis client SDK |
-| <a target="_blank" href="https://github.com/dotnetcore/CAP">CAP</a> | Event bus and eventual consistency / distributed transaction component |
-| <a target="_blank" href="https://github.com/rabbitmq/rabbitmq-dotnet-client">RabbitMQ</a> | Asynchronous message queue component |
-| <a target="_blank" href="https://github.com/App-vNext/Polly">Polly</a> | .NET resilience and transient-fault-handling library |
-| <a target="_blank" href="https://github.com/FluentValidation">FluentValidation</a> | .NET validation framework |
-| <a target="_blank" href="https://github.com/mariadb-corporation/MaxScale">MaxScale</a> | Mature, high-performance, open-source database middleware from MariaDB |
-| <a target="_blank" href="https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks">AspNetCore.HealthChecks</a> | Health check component that can work together with Consul health checks |
+### Shared Contracts
 
-## Demo Service Overview
-
-The demo includes five related microservices, each showing a different service decomposition and project organization style.
-
-| Service | Description | Architecture Style |
-| --- | --- | --- |
-| Admin | System management (organization, users, roles, permissions, dictionaries, configuration) | Classic layered architecture with separate contracts |
-| Maint | Operations management (logs, audits) | Classic layered architecture with merged contracts |
-| Cust | Customer management | Minimal single-project structure |
-| Ord | Order management | Domain-driven design (DDD) with a domain layer |
-| Whse | Warehouse management | Domain-driven design (DDD) with a domain layer |
-
-These demos show how to organize code for different business sizes and complexity levels while keeping the overall framework consistent.
-
-##### :white_check_mark: Shared
-
-> Shared demo projects reused by all demo services.
-
-```
-Shared/
-├── Remote.Event/ - Event contracts for cross-service communication
-├── Remote.Grpc/ - gRPC client definitions
-├── Remote.Http/ - HTTP client definitions
-├── protos/ - gRPC protocol definitions
-└── resources/ - Shared configuration and resources
+```text
+src/Demo/Shared
+├── Remote.Event/      Integration event contracts
+├── Remote.Grpc/       gRPC client definitions
+├── Remote.Http/       HTTP client definitions
+├── protos/            gRPC protocol definitions
+└── resources/         Shared configuration and resources
 ```
 
-##### :white_check_mark: Adnc.Demo.Admin
+### Service Layouts
 
-> Admin is the system management service. It uses a classic three-layer structure and places application service contracts in a separate `Adnc.Demo.Admin.Application.Contracts` project. This layout is clear and well suited to back-office scenarios with well-defined boundaries and more modules.
-
-```
+```text
 Admin/
-├── Api/ - Controllers and API endpoints
-├── Application/ - Business logic implementations
-├── Application.Contracts/ - DTOs and service interfaces
-└── Repository/ - Data access layer
-```
+├── Api/
+├── Application/
+├── Application.Contracts/
+└── Repository/
 
-##### :white_check_mark: Adnc.Demo.Maint
-
-> Maint is the operations center service. It uses a more compact three-layer structure, with both contracts and implementations living in `Adnc.Demo.Maint.Application`. This reduces the number of projects while keeping responsibilities clear.
-
-```
 Maint/
-├── Api/ - Controllers and endpoints
-├── Application/ - Contracts and implementations
-└── Repository/ - Data access layer
-```
+├── Api/
+├── Application/
+└── Repository/
 
-##### :white_check_mark: Adnc.Demo.Cust
-
-> Cust is the customer center service. It uses a single-project structure, with controllers, application services, contracts, and repositories all living in one project. This approach is better suited to smaller services with focused responsibilities and clear boundaries.
-
-```
 Cust/
-└── Api/ - Controllers, application logic, and repositories
-```
+└── Api/
 
-##### :white_check_mark: Adnc.Demo.Ord
-
-> Ord is the order center service. It uses a DDD structure with an independent domain layer to emphasize business rules and domain models while separating them from application-layer concerns.
-
-```
 Ord/
-├── Api/ - API endpoints
-├── Application/ - Application services
-├── Domain/ - Domain entities, aggregates, and domain services
-└── Migrations/ - Database migrations
-```
+├── Api/
+├── Application/
+├── Domain/
+└── Migrations/
 
-##### :white_check_mark: Adnc.Demo.Whse
-
-> Whse is the warehouse center service. Its structure is the same as Ord and also uses a DDD organization with an independent domain layer.
-
-```
 Whse/
-├── Api/ - API endpoints
-├── Application/ - Application services
-├── Domain/ - Domain entities, aggregates, and domain services
-└── Migrations/ - Database migrations
+├── Api/
+├── Application/
+├── Domain/
+└── Migrations/
 ```
 
-## Documentation Links
+## Documentation
 
-| Index | English Title                                                |
-| :---- | :----------------------------------------------------------- |
-| 01    | [ADNC Project Tour: A Practical .NET 8 Implementation](https://github.com/alphayu/adnc/wiki/01-adnc-intro) |
-| 02    | [ADNC Quick Start Guide](https://github.com/alphayu/adnc/wiki/02-quickstart) |
-| 03    | [ADNC Quick Docker Deployment Guide](https://github.com/alphayu/adnc/wiki/03-quickly-docker-deploy) |
-| 04    | [ADNC Configuration Nodes Detailed Explanation](https://github.com/alphayu/adnc/wiki/04-appsettings) |
-| 05    | [ADNC Development Workflow](https://github.com/alphayu/adnc/wiki/05-feature-dev-guide) |
-| 06    | [ADNC Repository Layer Development Guide](https://github.com/alphayu/adnc/wiki/06-repository-dev-guide) |
-| 07    | [ADNC Service Layer Development Guide](https://github.com/alphayu/adnc/wiki/07-service-dev-guide) |
-| 08    | [ADNC API Layer Development Guide](https://github.com/alphayu/adnc/wiki/08-api-dev-guide) |
-| 09    | [ADNC Authentication and Authorization](https://github.com/alphayu/adnc/wiki/09-claims-based-authentication) |
-| 10    | [ADNC Repository Usage: Basic Functionality](https://github.com/alphayu/adnc/wiki/10-efcore-pemelo-curd) |
-| 11    | [ADNC Repository Usage: Code First](https://github.com/alphayu/adnc/wiki/11-efcore-pemelo-codefirst) |
-| 12    | [ADNC Repository Usage: Switching Database Types](https://github.com/alphayu/adnc/wiki/12-efcore-pemelo-sqlserver) |
-| 13    | [ADNC Repository Usage: Transactions and Unit of Work](https://github.com/alphayu/adnc/wiki/13-efcore-pemolo-unitofwork) |
-| 14    | [ADNC Repository Usage: Executing Raw SQL](https://github.com/alphayu/adnc/wiki/14-efcore-pemelo-sql) |
-| 15    | [ADNC Repository Usage: Read/Write Splitting](https://github.com/alphayu/adnc/wiki/15-maxsale-readwritesplit) |
-| 16    | [ADNC ID Generator: Snowflake Algorithm](https://github.com/alphayu/adnc/wiki/16-snowflake-max_value-wokerid) |
-| 17    | [ADNC Cache: Redis, Distributed Locks, and Bloom Filters](https://github.com/alphayu/adnc/wiki/17-cache-redis-distributedlock-bloomfilter) |
-| 18    | [ADNC Inter-service Communication: HTTP (Refit)](https://github.com/alphayu/adnc/wiki/18-service-http-call) |
-| 19    | [ADNC Inter-service Communication: gRPC](https://github.com/alphayu/adnc/wiki/19-service-grpc-call) |
-| 20    | [ADNC Inter-service Communication: Events (CAP)](https://github.com/alphayu/adnc/wiki/20-service-event-call) |
-| 21    | [ADNC Observability: Enabling SkyAPM (SkyWalking)](https://github.com/alphayu/adnc/wiki/21-skyapm-tracing) |
-| 22    | [ADNC Configuration Center: Consul](https://github.com/alphayu/adnc/wiki/22-config-center) |
-| 23    | [ADNC Service Registry: Consul](https://github.com/alphayu/adnc/wiki/23-registry-center) |
+| Index | Topic                                                        |
+| ----- | ------------------------------------------------------------ |
+| 01    | [ADNC Project Tour: A Practical .NET 8 Implementation](https://docs.aspdotnetcore.net/adnc/01-adnc-intro) |
+| 02    | [ADNC Quick Start Guide](https://docs.aspdotnetcore.net/adnc/02-quickstart) |
+| 03    | [ADNC Quick Docker Deployment Guide](https://docs.aspdotnetcore.net/adnc/03-quickly-docker-deploy) |
+| 04    | [ADNC Configuration Nodes Detailed Explanation](https://docs.aspdotnetcore.net/adnc/04-appsettings) |
+| 05    | [ADNC Development Workflow](https://docs.aspdotnetcore.net/adnc/05-feature-dev-guide) |
+| 06    | [ADNC Repository Layer Development Guide](https://docs.aspdotnetcore.net/adnc/06-repository-dev-guide) |
+| 07    | [ADNC Service Layer Development Guide](https://docs.aspdotnetcore.net/adnc/07-service-dev-guide) |
+| 08    | [ADNC API Layer Development Guide](https://docs.aspdotnetcore.net/adnc/08-api-dev-guide) |
+| 09    | [ADNC Authentication and Authorization](https://docs.aspdotnetcore.net/adnc/09-claims-based-authentication) |
+| 10    | [ADNC Repository Usage: Basic Functionality](https://docs.aspdotnetcore.net/adnc/10-efcore-pemelo-curd) |
+| 11    | [ADNC Repository Usage: Code First](https://docs.aspdotnetcore.net/adnc/11-efcore-pemelo-codefirst) |
+| 12    | [ADNC Repository Usage: Switching Database Types](https://docs.aspdotnetcore.net/adnc/12-efcore-pemelo-sqlserver) |
+| 13    | [ADNC Repository Usage: Transactions and Unit of Work](https://docs.aspdotnetcore.net/adnc/13-efcore-pemolo-unitofwork) |
+| 14    | [ADNC Repository Usage: Executing Raw SQL](https://docs.aspdotnetcore.net/adnc/14-efcore-pemelo-sql) |
+| 15    | [ADNC Repository Usage: Read/Write Splitting](https://docs.aspdotnetcore.net/adnc/15-maxsale-readwritesplit) |
+| 16    | [ADNC ID Generator: Snowflake Algorithm](https://docs.aspdotnetcore.net/adnc/16-snowflake-max_value-wokerid) |
+| 17    | [ADNC Cache: Redis, Distributed Locks, and Bloom Filters](https://docs.aspdotnetcore.net/adnc/17-cache-redis-distributedlock-bloomfilter) |
+| 18    | [ADNC Inter-service Communication: HTTP with Refit](https://docs.aspdotnetcore.net/adnc/18-service-http-call) |
+| 19    | [ADNC Inter-service Communication: gRPC](https://docs.aspdotnetcore.net/adnc/19-service-grpc-call) |
+| 20    | [ADNC Inter-service Communication: Events with CAP](https://docs.aspdotnetcore.net/adnc/20-service-event-call) |
+| 21    | [ADNC Observability: Enabling SkyAPM and SkyWalking](https://docs.aspdotnetcore.net/adnc/21-skyapm-tracing) |
+| 22    | [ADNC Configuration Center: Consul](https://docs.aspdotnetcore.net/adnc/22-config-center) |
+| 23    | [ADNC Service Registry: Consul](https://docs.aspdotnetcore.net/adnc/23-registry-center) |
 
-## Screenshots / JMeter / Website
-
-### JMeter Testing
-
-> Six test cases cover the gateway, service discovery, configuration center, synchronous service calls, database CRUD, local transactions, distributed transactions, caching, Bloom filters, SkyAPM tracing, NLog logging, and operation logs.
-
-- ECS server configuration: 4 vCPU, 8 GB RAM, 8 Mbps bandwidth. The server was also running many other components, with about 50% CPU and 50% memory still available.
-- Due to bandwidth limits, throughput was around 1000 requests/second.
-- Simulated concurrency: 1200 threads/second
-- Read/write ratio: 7:3
+## Ecosystem
 
 ### Front-end
 
-An out-of-the-box admin front-end template based on Vue 3, Vite, TypeScript, and Element Plus.
+ADNC has a companion admin front-end built with Vue 3, Vite, TypeScript, and Element Plus.
 
-#### Project Repository
+- [adnc-vue-elementplus](https://github.com/alphayu/adnc-vue-elementplus)
 
-- [adnc-vue3: ADNC's Vue3 front-end](https://github.com/alphayu/adnc-vue-elementplus)
+![ADNC exception log page](./docs/assets/images/adnc-dashboard-nlog.png)
 
-#### UI Screenshots
+![ADNC role management page](./docs/assets/images/adnc-dashboard-role.png)
 
-![.NET open-source microservice framework - exception log page](https://aspdotnetcore.net/wp-content/uploads/2021/11/adnc-dashboard-nlog.png)
-![.NET open-source microservice framework - role management page](https://aspdotnetcore.net/wp-content/uploads/2021/11/adnc-dashboard-role.png)
+### Links
 
-### Related Links
+- Official website: [https://aspdotnetcore.net](https://aspdotnetcore.net)
+- Documentation: [https://docs.aspdotnetcore.net](https://docs.aspdotnetcore.net)
+- Online demo: [https://online.aspdotnetcore.net](https://online.aspdotnetcore.net)
+- Code generator: [https://code.aspdotnetcore.net](https://code.aspdotnetcore.net)
 
-#### Official Website
+## Performance Notes
 
-- [https://aspdotnetcore.net](https://aspdotnetcore.net)
+The project includes JMeter-oriented notes from a demo environment covering gateway routing, service discovery, configuration center access, synchronous service calls, CRUD operations, local transactions, distributed transactions, caching, Bloom filters, tracing, logging, and operation logs.
 
-#### Online Demo
+Reference environment:
 
-- [https://online.aspdotnetcore.net](https://online.aspdotnetcore.net)
+- ECS server: 4 vCPU, 8 GB RAM, 8 Mbps bandwidth.
+- Approximate remaining capacity during testing: 50 percent CPU and 50 percent memory.
+- Observed throughput around 1000 requests per second, constrained by bandwidth.
+- Simulated concurrency: 1200 concurrent threads.
+- Read/write ratio: 7:3.
 
-#### Code Generator
+These numbers are environment-specific and should be treated as scenario notes, not benchmark guarantees.
 
-- [https://code.aspdotnetcore.net](https://code.aspdotnetcore.net)
+## Contributing
 
-#### Database Scripts
+Issues, discussions, and pull requests are welcome. For larger changes, start by opening an issue that explains the problem, proposed direction, and expected impact on existing packages, demo services, or documentation.
 
-- [adnc/doc/dbsql at develop · AlphaYu/adnc](https://github.com/AlphaYu/adnc/tree/develop/doc/dbsql)
+When contributing code, try to preserve the project intent:
 
-### Community
+- Keep infrastructure concerns reusable and service-agnostic.
+- Keep business behavior inside the relevant demo service.
+- Prefer established .NET ecosystem components over custom infrastructure unless there is a clear reason.
+- Update documentation when behavior, configuration, or startup flow changes.
 
-- QQ Group: `780634162`
+## Community
 
-- If you made it this far, please give the project a `star`!
+If ADNC helps you evaluate, teach, or build .NET distributed systems, consider giving the repository a star.
 
 ## License
 
-This project is open sourced under the **MIT License**. See [LICENSE](./LICENSE) for details.
+ADNC is released under the [MIT License](./LICENSE).

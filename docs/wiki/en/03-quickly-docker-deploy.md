@@ -26,7 +26,7 @@ docker network create \
 
 ## 4. Upload the Middleware Deployment YAML Files
 
-Upload the local `adnc\staging` folder to `/opt/adnc` on the server.
+Upload the local `adnc\deploy\staging` folder to `/opt/adnc` on the server.
 
 After upload, the server directory structure should be:
 
