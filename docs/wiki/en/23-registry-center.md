@@ -1,52 +1,71 @@
-# ADNC Service Registry: Consul
+# How to Use the Registry Center in ADNC
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-ADNC supports multiple service registration and discovery methods, controlled via the `RegisterType` setting:
+This project supports multiple service registration and discovery modes, controlled by `RegisterType`:
 
-- **Direct**: No registration. Services call each other using static URLs.
-- **Consul**: Services register with Consul; discovery is handled by service name.
-- **CoreDns**: Used in Kubernetes environments for in-cluster domain name resolution.
+- `Direct`: No registration is required; fixed URLs are used directly for inter-service calls.
+- `Consul`: Services register to Consul, and inter-service calls discover instance addresses by service name.
+- `CoreDns`: Used in Kubernetes scenarios, accessed through the in-cluster domain name.
 
 ---
 
 ## 0. Quick Start
 
-1. Start Consul.
-2. Set `RegisterType` to `Consul` in your configuration.
-3. Configure the `Consul` node (URL, service name, health check endpoint, etc.).
-4. Start the service and verify it appears in the Consul UI with a passing health check.
-5. Update your `RpcInfo` addresses to use the Consul service name format.
+1. Start Consul, or use an existing Consul environment.
+2. Switch the service `RegisterType` to `Consul`.
+3. Complete the `Consul` node configuration, including at least `ConsulUrl`, health-check configuration, service name, and tags.
+4. Start the service and open the Consul UI to confirm that the service has been registered and its health check has passed.
+5. Switch inter-service call addresses to the Consul format, such as `RpcInfo:Address[*]:Consul = http://{service-name}`, and verify that calls work.
 
 ---
 
-## 1. Registry vs. Configuration Center
+## 1. Registry Center vs. Configuration Center
 
-- **Configuration Center** (`ConfigurationType`): Used to **load settings** from Consul KV.
-- **Service Registry** (`RegisterType`): Used for **registering the instance** on startup and **discovering instances** during calls.
+In this project:
 
-You can use both together (recommended) or independently.
+- **Configuration Center** is controlled by `ConfigurationType` (`File/Consul/...`) and is used to load appsettings configuration. See `docs/wiki/config-center-zh.md`.
+- **Registry Center** is controlled by `RegisterType` (`Direct/Consul/CoreDns`) and is used for service registration at startup and service discovery during inter-service calls.
 
----
+Both can be used together:
 
-## 2. Registration Process
-
-On startup, each service triggers the registration logic:
-
-- **Timing**:
-  - `ApplicationStarted`: Registers the service with Consul.
-  - `ApplicationStopping`: Deregisters the service from Consul.
-- **Metadata Registered**:
-  - `Name`: The service name (supports `$SERVICENAME` placeholder).
-  - `Address/Port`: Extracted from Kestrel settings (automatically resolves `0.0.0.0` to local IPv4).
-  - `Tags`: Used for routing or grouping (e.g., `urlprefix-/$SHORTNAME`).
-  - `Check`: HTTP health check settings.
+- Common practice: `ConfigurationType = Consul` (configuration comes from Consul KV) + `RegisterType = Consul` (service is also registered to Consul).
+- Registry only: `ConfigurationType = File` + `RegisterType = Consul` (local configuration files, but still registered to Consul).
+- Consul configuration + CoreDNS registration: `ConfigurationType = Consul` + `RegisterType = CoreDns`.
 
 ---
 
-## 3. Configuration for Consul Registry
+## 2. Service Registration Process
 
-### 3.1 Enabling the Registry
+Each service calls the following in `Program.cs`:
+
+- `app.UseRegistrationCenter()`; see `src/Demo/*/Api/Program.cs`.
+
+The core logic is located in `src/ServiceShared/WebApi/Extensions/HostExtension.cs`:
+
+- Read `RegisterType`.
+- `Direct`: Do not register.
+- `Consul/CoreDns`: Call `RegisterToConsul(...)`.
+
+Registration and deregistration timing:
+
+- `ApplicationStarted`: Register the service with Consul.
+- `ApplicationStopping`: Deregister the service from Consul.
+
+The Consul registration implementation is located at `src/Infrastructures/Consul/Registrar/RegistrationProvider.cs`. Registration information includes:
+
+- `Name`: `Consul:ServiceName`, usually `$SERVICENAME`, automatically replaced at startup.
+- `Address/Port`: From `Kestrel:Endpoints:Default:Url`. If the address is `0.0.0.0`, it is automatically replaced by an IPv4 address of the current machine.
+- `Tags`: `Consul:ServerTags`, such as `urlprefix-/$SHORTNAME`, commonly used for gateway routing or grouping.
+- `Check`: HTTP health check, determined by configuration such as `Consul:HealthCheckUrl`.
+
+---
+
+## 3. Switch to the Registry Center (Consul)
+
+### 3.1 Set `RegisterType = Consul`
+
+Taking local development as an example, where the default `src/Demo/Shared/resources/appsettings.shared.Development.json` is `Direct`, set the corresponding environment configuration to:
 
 ```json
 {
@@ -54,43 +73,99 @@ On startup, each service triggers the registration logic:
 }
 ```
 
-### 3.2 Configuring the Consul Node
+> Tip: If you use the Configuration Center (Consul KV) to load shared configuration, it is recommended to place `RegisterType` in shared KV for unified management.
+
+### 3.2 Configure the `Consul` Node
+
+The registry center requires at least `ConsulUrl`, along with service name and health-check information. A typical configuration excerpt is:
 
 ```json
-"Consul": {
-  "ConsulUrl": "http://127.0.0.1:8500",
-  "ServiceName": "$SERVICENAME",
-  "ServerTags": [ "urlprefix-/$SHORTNAME" ],
-  "HealthCheckUrl": "$RELATIVEROOTPATH/health-CHECK_ID",
-  "HealthCheckIntervalInSecond": 6,
-  "DeregisterCriticalServiceAfter": 20,
-  "Timeout": 6
+{
+  "Consul": {
+    "ConsulUrl": "http://127.0.0.1:8500",
+    "ServiceName": "$SERVICENAME",
+    "ServerTags": [ "urlprefix-/$SHORTNAME" ],
+    "HealthCheckUrl": "$RELATIVEROOTPATH/health-24b01005-a76a-4b3b-8fb1-5e0f2e9564fb",
+    "HealthCheckIntervalInSecond": 6,
+    "DeregisterCriticalServiceAfter": 20,
+    "Timeout": 6
+  }
 }
 ```
 
-- **HealthCheckUrl**: ADNC services expose a health endpoint by default. Consul uses this to monitor instance status.
+Notes:
+
+- `ConsulUrl`: Consul HTTP API address, used for both registration and discovery.
+- `ServiceName/ServerTags/HealthCheckUrl`: Supports `$SERVICENAME`, `$SHORTNAME`, and `$RELATIVEROOTPATH`; these placeholders are automatically replaced at startup. See `src/ServiceShared/WebApi/Extensions/WebApplicationBuilderExtension.cs`.
+- `HealthCheckUrl`: Projects expose health-check endpoints by default. See `UseHealthChecks(...)` in `src/ServiceShared/WebApi/Registrar/AbstractWebApiMiddlewareRegistrar.cs`.
+
+### 3.3 Confirm the `Kestrel` Default Port
+
+The address registered to Consul comes from `Kestrel:Endpoints:Default:Url`.
+
+For example, the Demo Cust service (`src/Demo/Cust/Api/appsettings.Development.json`) contains:
+
+```json
+{
+  "Kestrel": {
+    "Endpoints": {
+      "Default": { "Url": "http://0.0.0.0:50030" },
+      "gRPC": { "Url": "http://0.0.0.0:50031", "Protocols": "Http2" }
+    }
+  }
+}
+```
+
+When `Url` is bound to `0.0.0.0`, the local IPv4 address is used during registration to avoid registering an inaccessible address.
 
 ---
 
-## 4. Service Discovery during Calls
+## 4. Discover Instances Through Consul During Inter-Service Calls
 
-Service addresses are defined in `RpcInfo:Address`. When `RegisterType = Consul`, use the service name as the host.
+The inter-service call address is determined by `RpcInfo:Address`, and different base addresses are selected according to `RegisterType`. See `src/ServiceShared/Application/Registrar/AbstractApplicationDependencyRegistrar.RpcClient.cs`.
 
-### 4.1 HTTP (Refit)
-Requests to `http://{service-name}` are intercepted by `ConsulDiscoverDelegatingHandler`, which resolves the name to a healthy instance IP/Port from Consul.
+When `RegisterType = Consul`, configure `RpcInfo:Address[*]:Consul` in service-name format:
+
+```json
+{
+  "RpcInfo": {
+    "Address": [
+      {
+        "Service": "adnc-demo-admin-api",
+        "Consul": "http://adnc-demo-admin-api"
+      }
+    ]
+  }
+}
+```
+
+### 4.1 HTTP (REST / Refit)
+
+- When `BaseAddress` is `http://{service-name}`, requests go through `ConsulDiscoverDelegatingHandler` (`src/Infrastructures/Consul/Discover/Handler/ConsulDiscoverDelegatingHandler.cs`).
+- The handler queries healthy instances from Consul by `{service-name}`, selects an instance address, and rewrites the actual request to `http://{ip}:{port}/{path}`.
 
 ### 4.2 gRPC
-Requests to `consul://{service-name}` use a custom `ConsulGrpcResolver` and gRPC's `RoundRobin` load balancer. 
 
-> Note: By convention in ADNC, the gRPC port is `HTTP Port + 1`.
+- When `BaseAddress` is `consul://{service-name}`, the custom resolver (`src/Infrastructures/Consul/Discover/gRPCResolver/ConsulgRPCResolver.cs`) is enabled.
+- The resolver periodically pulls all healthy instances from Consul and works with gRPC `RoundRobin` for load balancing.
+
+> Note: This project assumes that the gRPC port of the same service is HTTP port + 1. The resolver internally handles the `+1` port conversion.
+
+---
+
+## 5. FAQ
+
+- Service does not appear in the Consul UI: Confirm `RegisterType = Consul`; confirm that `Consul:ConsulUrl` is correct and accessible; confirm that the service startup code calls `UseRegistrationCenter()`.
+- Consul shows the service as unhealthy: Check whether `Consul:HealthCheckUrl` is consistent with the health-check route exposed by the project; confirm that the gateway/reverse proxy does not intercept this path.
+- Instance address cannot be resolved when calling: Confirm that the target service is registered and healthy; confirm that the host of `RpcInfo:Address[*]:Consul` matches the registered `ServiceName`, usually the service name.
 
 ---
 
-## 5. Troubleshooting
+## 6. Quickly Start Consul
 
-- **Service Missing in UI**: Check `RegisterType` and `ConsulUrl`. Ensure `UseRegistrationCenter()` is called in the startup code.
-- **Unhealthy Status**: Verify the `HealthCheckUrl` matches the service's actual health route. Ensure no firewall/gateway is blocking the health check.
-- **Resolution Failure**: Ensure the `service-name` used in `RpcInfo` matches the name registered in Consul.
+The repository provides Consul docker-compose files and initialization scripts, including KV initialization. They can also be used directly as a registry center:
 
----
-*If this helps, please Star & Fork.*
+- `doc/devops-staging/adnc-consul/docker-compose.yml`
+- `doc/devops-staging/adnc-consul/consul-init.sh`
+- `doc/devops/docker-compose/adnc-consul/docker-compose.yml`
+- `doc/devops/docker-compose/adnc-consul/consul-init.sh`

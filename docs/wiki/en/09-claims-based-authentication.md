@@ -1,10 +1,8 @@
 # ADNC Authentication and Authorization
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-In the .NET Framework era, Forms Authentication was commonly used. However, for decoupled frontend-backend systems or multi-client architectures, Forms Authentication lacks compatibility, leading to low code reuse and high maintenance costs. ASP.NET Core has restructured authentication and authorization using a **Claims-based** model.
-
-Commonly used authentication components include:
+In the .NET Framework era, Forms authentication was commonly used. For systems with front-end/back-end separation and multiple clients, Forms authentication has poor compatibility and can easily lead to low code reuse and high maintenance cost.ASP.NET Core redesigned authentication and authorization around a claims-based authentication model. Common authentication components include:
 
 - `Microsoft.AspNetCore.Authentication.JwtBearer`
 - `Microsoft.AspNetCore.Authentication.Cookies`
@@ -15,20 +13,16 @@ Commonly used authentication components include:
 - `Microsoft.AspNetCore.Authentication.Facebook`
 - `Microsoft.AspNetCore.Authentication.Twitter`
 
-These components are provided by the .NET SDK and are unified based on claims, implementing abstractions from `Microsoft.AspNetCore.Authentication.Abstractions`. ASP.NET Core makes it easy to implement "Mixed Authentication," where different Actions in the same Controller can be configured to use Cookies or JwtBearer authentication.
+These components are implemented by the .NET SDK, are all based on claims, and implement the abstractions in `Microsoft.AspNetCore.Authentication.Abstractions`. ASP.NET Core makes hybrid authentication straightforward: different actions in the same controller can use Cookies, JwtBearer, or other authentication schemes.To support more flexible authentication strategies, such as allowing the same action to support multiple authentication schemes, ADNC introduces Hybrid and Basic authentication. Hybrid is a project-specific routing solution, while Basic follows the HTTP standard. The implementation is located in the `Authentication` directory of the `Adnc.Shared.WebApi` project.
 
-To provide more flexible authentication strategies (e.g., supporting multiple schemes for a single Action), ADNC introduces **Hybrid** and **Basic** authentication modes. **Hybrid** is a project-specific routing scheme, while **Basic** follows the standard HTTP Basic Authentication. These implementations are located in the `Authentication` directory of the `Adnc.Shared.WebApi` project.
+# Why Use Multiple Authentication Schemes?
 
-## Why Mixed Authentication?
+In some scenarios, JwtBearer alone is not enough:
 
-Using only `JwtBearer` might be insufficient in certain scenarios, such as:
+- Synchronous calls between microservices: if feature X in service A calls feature Y in service B, JwtBearer alone requires the caller to hold permissions for both service A and service B.
+- The same issue may occur when exposing APIs to third parties.For synchronous calls between microservices, Basic authentication can be used as an optional and simpler authentication method. If your business scenario does not need this support, you can use JwtBearer only.For third-party integration scenarios, another authentication method can also be added.
 
-- **Synchronous Microservice Calls**: If Service A calls Service B's functionality, and only `JwtBearer` is used, the caller must possess permissions for both services, which complicates permission propagation and management.
-- **Third-party Integration**: Exposing APIs to external parties may require simpler or alternative authentication methods.
-
-For inter-service calls, **Basic Authentication** serves as a simpler, optional alternative. If your business scenario doesn't require this, you can stick to `JwtBearer`.
-
-## Registering Authentication Services
+# Register Authentication Services
 
 ```csharp
 protected virtual void AddAuthentication<TAuthenticationHandler>() where TAuthenticationHandler : AbstractAuthenticationProcessor
@@ -38,26 +32,32 @@ protected virtual void AddAuthentication<TAuthenticationHandler>() where TAuthen
     var jwtSection = Configuration.GetRequiredSection(NodeConsts.JWT);
     var basicSection = Configuration.GetRequiredSection(NodeConsts.Basic);
     var jwtOptions = jwtSection.Get<JWTOptions>() ?? throw new InvalidDataException(nameof(jwtSection));
-    
     Services
         .Configure<JWTOptions>(jwtSection)
         .Configure<BasicOptions>(basicSection)
         .AddScoped<AbstractAuthenticationProcessor, TAuthenticationHandler>()
         .AddAuthentication(HybridDefaults.AuthenticationScheme)
         .AddHybrid()
-        .AddJwtBearer(options => { })
-        .AddBasic(options => options.Events.OnTokenValidated = (context) => { });
+        .AddJwtBearer(options =>
+        {
+        })
+        .AddBasic(options => options.Events.OnTokenValidated = (context) =>
+        {
+        });
 }
 ```
 
-- **AddHybrid**: Registers services for Hybrid authentication.
-- **AddBasic**: Registers services for Basic authentication.
-- **AddJwtBearer**: Registers services for JwtBearer authentication.
+- `AddHybrid`: registers Hybrid authentication services.
+- `AddBasic`: registers Basic authentication services.
+- `AddJwtBearer`: registers JwtBearer authentication services.The core authentication logic is implemented by each specific `AuthenticationHandler`. In the example above, the default authentication scheme is Hybrid. `HybridAuthenticationHandler` is responsible only for routing requests to the corresponding authentication processor and does not directly execute authentication logic.
 
-The core of authentication lies in specific `AuthenticationHandlers`. In the example above, the default scheme is **Hybrid**. `HybridAuthenticationHandler` acts as a router that forwards requests to the appropriate authentication processor (e.g., JwtBearer or Basic).
+- `HybridAuthenticationHandler`
+- `JwtBearerAuthenticationHandler`
+- `BasicAuthenticationHandler`
 
-## Registering Authorization Services
-> Note: Authentication and Authorization are distinct concepts.
+# Register Authorization Services
+
+> Authentication and authorization are different concepts.
 
 ```csharp
 public virtual void AddAuthorization<THandler>() where THandler : AbstractPermissionHandler
@@ -65,15 +65,15 @@ public virtual void AddAuthorization<THandler>() where THandler : AbstractPermis
     _services.AddScoped<IAuthorizationHandler, THandler>();
     _services.AddAuthorization(options =>
     {
-        options.AddPolicy(AuthorizePolicy.Default, policy =>
-        {
-            policy.Requirements.Add(new PermissionRequirement());
-        });
+      options.AddPolicy(AuthorizePolicy.Default, policy =>
+      {
+        policy.Requirements.Add(new PermissionRequirement());
+      });
     });
 }
 ```
 
-The core logic for authorization is in `AbstractPermissionHandler.cs` within the `Adnc.Shared.WebApi` project:
+The core authorization code is in `AbstractPermissionHandler.cs` in the `Adnc.Shared.WebApi` project:
 
 ```csharp
 public abstract class AbstractPermissionHandler : AuthorizationHandler<PermissionRequirement>
@@ -83,15 +83,15 @@ public abstract class AbstractPermissionHandler : AuthorizationHandler<Permissio
         if (context.User.Identity.IsAuthenticated && context.Resource is HttpContext httpContext)
         {
             var authHeader = httpContext.Request.Headers["Authorization"].ToString();
-            
-            // If Basic authentication is used and the Action allows Basic, bypass further checks.
+            // If Basic authentication is used and the action allows Basic, permission checks pass by default.
             if (authHeader != null && authHeader.StartsWith(BasicDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
             {
                 context.Succeed(requirement);
                 return;
             }
 
-            // For JwtBearer, check for specific functional permissions.
+            // After JwtBearer authentication succeeds and the action allows JwtBearer,
+            // the user's feature permissions still need to be checked.
             var userId = long.Parse(context.User.Claims.First(x => x.Type == JwtRegisteredClaimNames.NameId).Value);
             var validationVersion = context.User.Claims.FirstOrDefault(x => x.Type == "version")?.Value;
             var codes = httpContext.GetEndpoint().Metadata.GetMetadata<PermissionAttribute>().Codes;
@@ -109,9 +109,9 @@ public abstract class AbstractPermissionHandler : AuthorizationHandler<Permissio
 }
 ```
 
-## Setting Action Attributes
+# Configure Action Properties
 
-ADNC applies a global authorization requirement when registering Endpoint middleware, meaning all methods require authentication by default.
+When ADNC registers Endpoint middleware, it sets global authentication interception, which means all methods require authentication by default.
 
 ```csharp
 app.UseEndpoints(endpoints =>
@@ -120,45 +120,71 @@ app.UseEndpoints(endpoints =>
 });
 ```
 
-- **Allow Anonymous Access**:
+Allow anonymous access:
+
 ```csharp
 [AllowAnonymous]
 public async Task<ActionResult<UserTokenInfoDto>> LoginAsync([FromBody] UserLoginDto input)
 ```
 
-- **Require Specific Permission (JwtBearer only)**:
+Require the `PermissionConsts.Dept.Create` permission and the JwtBearer authentication scheme:
+
 ```csharp
 [Permission(PermissionConsts.Dept.Create)]
 public async Task<ActionResult<long>> CreateAsync([FromBody] DeptCreationDto input)
 ```
 
-- **Require Specific Permission (JwtBearer and Basic support)**:
+Require the `PermissionConsts.Dept.GetList` permission and support both JwtBearer and Basic authentication:
+
 ```csharp
 [Permission(PermissionConsts.Dept.GetList, PermissionAttribute.JwtWithBasicSchemes)]
 public async Task<ActionResult<List<DeptTreeDto>>> GetListAsync()
 ```
 
-## Specifying Authentication in Clients
+The following shows the implementation of `AdncAuthorizeAttribute`. The default authentication scheme is JwtBearer.
 
-- **JwtBearer** => `Authorization: Bearer {token}`
-- **Basic** => `Authorization: Basic {credentials}`
-
-Frontend applications typically use `JwtBearer`. Synchronous microservice calls (except for authentication services) often use `Basic` to simplify inter-service authorization.
-
-- **Requesting JwtBearer**:
 ```csharp
-[Headers("Authorization: Bearer")]
-[Get("/usr/users/{userId}/permissions")]
-Task<ApiResponse<List<string>>> GetCurrenUserPermissionsAsync(...);
+public class AdncAuthorizeAttribute : AuthorizeAttribute
+{
+    public const string JwtWithBasicSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{Authentication.Basic.BasicDefaults.AuthenticationScheme}";
+
+    public AdncAuthorizeAttribute(string code, string schemes = JwtBearerDefaults.AuthenticationScheme)
+        : this([code], schemes)
+    {
+    }
+
+    public AdncAuthorizeAttribute(string[] codes, string schemes = JwtBearerDefaults.AuthenticationScheme)
+    {
+        Codes = codes;
+        Policy = AuthorizePolicy.Default;
+        AuthenticationSchemes = schemes ?? throw new ArgumentNullException(nameof(schemes)); ;
+    }
+
+    public string[] Codes { get; set; }
+}
 ```
 
-- **Requesting Basic Auth**:
+# Specify Authentication from the Client
+
+> JwtBearer => `Authorization: Bearer {token}`
+> Basic => `Authorization: Basic {credentials}`
+> Front-end interfaces usually use JwtBearer. Synchronous calls between microservices, except authentication services, usually use Basic authentication to simplify inter-service authentication.Require the server to use JwtBearer authentication:
+
+```csharp
+[Headers("Authorization: Bearer", "Cache: 2000")]
+[Get("/usr/users/{userId}/permissions")]
+Task<ApiResponse<List<string>>> GetCurrenUserPermissionsAsync(long userId, [Query(CollectionFormat.Multi)] IEnumerable<string> permissions, string validationVersion);
+}
+```
+
+Require the server to use Basic authentication:
+
 ```csharp
 [Get("/usr/depts")]
-[Headers("Authorization: Basic")]
+[Headers("Authorization: Basic", "Cache: 2000")]
 Task<ApiResponse<List<DeptRto>>> GeDeptsAsync();
 ```
 
----
+-- over --
 
-*If this helps, please Star & Fork.*
+If this helps, welcome to [star and fork](https://github.com/alphayu/adnc).

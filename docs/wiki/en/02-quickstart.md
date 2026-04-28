@@ -1,14 +1,14 @@
 # ADNC Quick Start Guide
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-## 1. Configuration Changes
+## 1. Modify Configuration Files
 
-In the development environment, shared configurations for all `adnc` services are centralized in `adnc\src\Demo\Shared\resources\appsettings.shared.Development.json` (e.g., Redis, RabbitMQ, etc.).
+In the development environment, shared configuration for each `adnc` service is centralized in `adnc\src\Demo\Shared\resources\appsettings.shared.Development.json`, such as Redis and RabbitMQ settings.
 
-Service-specific configurations are located in the `appsettings.Development.json` file of the corresponding API project (e.g., database connection strings, service ports, etc.).
+Service-specific configuration is stored in each API project's `appsettings.Development.json`, such as database connection strings and service ports.
 
-### 1.1 Redis Configuration
+1. Redis configuration
 
 ```json
 "Redis": {
@@ -17,92 +17,91 @@ Service-specific configurations are located in the `appsettings.Development.json
     "SerializerName": "json",
     "EnableBloomFilter": false,
     "Dbconfig": {
-        "ConnectionString": "SERVER_IP:PORT,password=PASSWORD,defaultDatabase=0,ssl=false,sslHost=null,connectTimeout=4000,allowAdmin=true"
+        "ConnectionString": "server-ip:port,password=password,defaultDatabase=0,ssl=false,sslHost=null,connectTimeout=4000,allowAdmin=true"
     }
 }
 ```
 
-### 1.2 RabbitMQ Configuration
+2. RabbitMQ configuration
 
 ```json
 "RabbitMq": {
-    "HostName": "SERVER_IP",
-    "Port": "PORT",
+    "HostName": "server-ip",
+    "Port": "port",
     "VirtualHost": "/",
-    "UserName": "USERNAME",
-    "Password": "PASSWORD"
+    "UserName": "username",
+    "Password": "password"
 }
 ```
 
-### 1.3 SysLogDb Configuration
+3. SysLogDb configuration
 
 ```json
 "SysLogDb": {
     "DbType": "mysql",
-    "ConnectionString": "Server=SERVER_IP;Port=PORT;database=adnc_syslog;uid=USERNAME;pwd=PASSWORD;connection timeout=30;"
+    "ConnectionString": "Server=server-ip;Port=port;database=adnc_syslog;uid=username;pwd=password;connection timeout=30;"
 }
 ```
 
-### 1.4 MariaDB/MySQL Configuration
+4. MariaDB/MySQL configuration
 
 ```json
-"Mysql": {
-    "ConnectionString": "Server=SERVER_IP;Port=PORT;database=adnc_admin;uid=USERNAME;pwd=PASSWORD;connection timeout=30;"
+"MySQL": {
+    "ConnectionString": "Server=server-ip;Port=port;database=adnc_admin;uid=username;pwd=password;connection timeout=30;"
 }
 ```
 
 ## 2. Import Database Data
 
-Database scripts for all services are stored in `adnc\doc\dbsql\adnc.sql`, which can be imported all at once.
+The database scripts for all services are stored in `adnc\database\mysql\adnc.sql`; you can import all data in one operation.
 
 ## 3. Start Backend Services
 
-1. In `Visual Studio 2022`, right-click the solution → **Properties** → **Startup Project** → **Multiple startup projects**. Check the following 4 projects:
-
+1. In `Visual Studio 2022`, right-click the solution, then choose **Properties** -> **Startup Project** -> **Multiple startup projects**, and select the following four projects:
    - `Adnc.Gateway.Ocelot`
    - `Adnc.Demo.Admin.Api`
    - `Adnc.Demo.Maint.Api`
    - `Adnc.Demo.Cust.Api`
 
-   **Note**: You don't need to start all services during actual development; this is just for a quick local experience.
+**Tip**: During normal development, you do not need to start every service at the same time. This setup is only for a quick local experience.
 
-2. In the `Visual Studio 2022` main interface, click the **Start** button to launch the 3 services and the gateway (4 projects in total).
+2. In the main `Visual Studio 2022` window, click **Start** to start the three services and the gateway, four projects in total.
 
-3. If startup errors occur, check the **Console Window** for error messages. Common issues include:
+3. If startup fails, first check the error message in the **console window**. Common issues include:
+   - **RabbitMQ port configuration error**: RabbitMQ exposes two ports, one for the web management page and one for data communication. Configure the data communication port in the configuration file.
+   - **Service port conflict**: The configured port may already be used by another application.
 
-   - **RabbitMQ Port Configuration**: RabbitMQ exposes two ports—one for the Web Management UI and one for data communication. Use the data port in the configuration.
-   - **Port Conflicts**: Conflicts with applications like WeChat Work or other services.
+| Project name | Description | URL |
+| --- | --- | --- |
+| Adnc.Gateway.Ocelot | Gateway | `http://localhost:5000` |
+| Adnc.Demo.Admin.Api | System management | `http://localhost:50010` |
+| Adnc.Demo.Maint.Api | Operations management | `http://localhost:50020` |
+| Adnc.Demo.Cust.Api | Customer management | `http://localhost:50030` |
 
-| Project Name         | Description           | URL                      |
-| -------------------- | --------------------- | ------------------------ |
-| Adnc.Gateway.Ocelot | Gateway               | `http://localhost:5000`  |
-| Adnc.Demo.Admin.Api | System Management     | `http://localhost:50010` |
-| Adnc.Demo.Maint.Api | Operations Management | `http://localhost:50020` |
-| Adnc.Demo.Cust.Api  | Customer Management   | `http://localhost:50030` |
+## 4. Start the Front End
 
-## 4. Start Frontend
+1. Use `Visual Studio Code` to open the front-end project `adnc-vue-elementplus`. The front end is based on `Vue 3` and requires dependency installation.
 
-1. Open the frontend project `adnc-vue-elementplus` in `Visual Studio Code`. The frontend is built with `Vue 3` and requires dependency installation.
-2. Run the following commands for environment setup:
+2. Run the following commands to configure the environment:
 
 ```bash
 # Install pnpm
 npm install pnpm -g
 
-# Optional: Set mirror registry
+# Optional: set a domestic mirror registry
 pnpm config set registry https://registry.npmmirror.com
 
 # Install dependencies
 pnpm install
 
-# Start the frontend project
+# Start the front-end project
 pnpm run dev
 ```
 
 ## 5. Conclusion
 
-`adnc` should now be running locally.
+At this point, `adnc` can run normally in your local environment.
 
-If this project helps you, please `Star` & `Fork` to support us!
+If this project is helpful to you, please support it with a `Star` and `Fork`.
 
-[ADNC](https://aspdotnetcore.net/) — A practical .NET microservices/distributed development framework.
+![ADNC](https://aspdotnetcore.net/) - An implementable .NET microservice/distributed development framework.

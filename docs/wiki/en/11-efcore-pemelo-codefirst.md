@@ -1,87 +1,141 @@
-# ADNC Repository Usage: Code First
+# ADNC Repository Usage - CodeFirst
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-This article describes how to map entities to the database in the `ADNC` framework using the **Code First** pattern. 
+This article mainly introduces how to map entities to the database in the`ADNC`framework. The examples are in Code First mode; you can also use DB First mode if needed.All operations in this article take the`Adnc.Demo.Cust`service as an example, and other services are defined in the same way.
 
-## Mapping Workflow
-
-### Step 1: Create the Entity
-Create your entity class in the `Entities` directory of the `Adnc.Cus.Repository` project.
-
-- For **Classic 3-tier architecture**, inherit from `EfEntity`.
-- For **DDD architecture**, inherit from `AggregateRoot` or `DomainEntity`.
+## How to map
+## The first step is to create an entity
+Create an entity (for example,`Customer`) in the`Repository/Entities`directory of the`Adnc.Demo.Cust.Api`project. If using DDD mode, the entity is usually located in the`Adnc.Demo.Xxx.Domain`project.> If developed using the classic three-tier model, the entity needs to directly or indirectly inherit the`EfEntity`class.
+> If developed using the DDD architecture model, the entity needs to directly or indirectly inherit`AggregateRoot`or`DomainEntity`.`EfEntity`The base class of all entity classes in the classic three-tier development model
 
 ```csharp
-namespace Adnc.Cus.Entities
+public abstract class EfEntity : Entity, IEfEntity<long>
+{ 
+}
+
+public abstract class EfBasicAuditEntity : EfEntity, IBasicAuditInfo
 {
-    public class Customer : EfFullAuditEntity
+}
+
+public abstract class EfFullAuditEntity : EfEntity, IFullAuditInfo
+{
+}
+```
+The complete code to create an entity class is as follows:
+
+```csharp
+public class Customer : EfFullAuditEntity
+{
+    public static readonly int Account_MaxLength = 16;
+    public static readonly int Password_Maxlength = 32;
+    public static readonly int Nickname_MaxLength = 16;
+    public static readonly int Realname_Maxlength = 16;
+    
+    public string Account { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public string Nickname { get; set; } = string.Empty;
+    public string Realname { get; set; } = string.Empty;
+    public virtual required Finance FinanceInfo { get; set; }
+    public virtual ICollection<TransactionLog>? TransactionLogs { get; set; }
+}
+```
+## The second step is to define the mapping relationship
+Create a mapping relationship class in the`Entities/Config`directory, such as`CustomerConfig`> Create a mapping relationship through`fluentapi`.
+
+```csharp
+public class CustomerConfig : AbstractEntityTypeConfiguration<Customer>
+{
+    public override void Configure(EntityTypeBuilder<Customer> builder)
     {
-        public string Account { get; set; }
-        public string Nickname { get; set; }
-        public string Realname { get; set; }
-        public virtual CustomerFinance FinanceInfo { get; set; }
-        public virtual ICollection<CustomerTransactionLog> TransactionLogs { get; set; }
+        base.Configure(builder);
+
+        builder.HasOne(d => d.FinanceInfo).WithOne().HasForeignKey<Finance>(d => d.Id).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(d => d.TransactionLogs).WithOne().HasForeignKey(p => p.CustomerId).OnDelete(DeleteBehavior.Cascade);
+        builder.Property(x => x.Account).HasMaxLength(Customer.Account_MaxLength);
+        builder.Property(x => x.Password).HasMaxLength(Customer.Password_Maxlength);
+        builder.Property(x => x.Nickname).HasMaxLength(Customer.Nickname_MaxLength);
+        builder.Property(x => x.Realname).HasMaxLength(Customer.Realname_Maxlength);
     }
 }
 ```
-
-### Step 2: Define the Mapping Configuration
-Create a mapping class in the `Entities/Config` directory using **Fluent API**.
+In many examples,`CustomerConfig`directly inherits the`IEntityTypeConfiguration<TEntity>`interface. I've encapsulated it a little bit here. Created a`AbstractEntityTypeConfiguration<TEntity>`abstract class. Then our entity relationship mapping class inherits this abstract class. This is mainly done to uniformly handle the mapping of some public feature fields. Such as soft deletion, concurrent column mapping, etc., the code is as follows.
 
 ```csharp
-namespace Adnc.Cus.Entities.Config
+public abstract class AbstractEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
+   where TEntity : Entity
 {
-    public class CustomerConfig : EntityTypeConfiguration<Customer>
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        public override void Configure(EntityTypeBuilder<Customer> builder)
-        {
-            base.Configure(builder);
-            builder.HasOne(d => d.FinanceInfo)...;
-            builder.Property(x => x.Account).IsRequired().HasMaxLength(50);
-        }
+        var entityType = typeof(TEntity);
+        ConfigureKey(builder, entityType);
+        ConfigureConcurrency(builder, entityType);
+        ConfigureSoftDelete(builder, entityType);
+        ConfigureAuditInfo(builder, entityType);
     }
 }
 ```
-
-Note: `EntityTypeConfiguration<TEntity>` is a base class in ADNC that handles common mapping concerns like soft deletes, concurrency tokens (`RowVersion`), and primary keys.
-
-### Step 3: Create the EntityInfo Class
-Define an `EntityInfo` class implementing `IEntityInfo`. This class is used to scan the assembly for entities.
+## The third step is to create the EntityInfo class
+Create a`EntityInfo`class and inherit the`AbstractEntityInfo`abstract class. The GetEntityAssemblies() method is to find the class that inherits`EfEntity`in the current assembly and put it into the collection.
 
 ```csharp
-namespace Adnc.Cus.Entities
+public class EntityInfo : AbstractEntityInfo
 {
-    public class EntityInfo : AbstractEntityInfo
+    protected override List<Assembly> GetEntityAssemblies() => [GetType().Assembly, typeof(EventTracker).Assembly];
+
+    protected override void SetTableName(ModelBuilder modelBuilder)
     {
-        public override IEnumerable<EntityTypeInfo> GetEntitiesTypeInfo()
-        {
-            return base.GetEntityTypes(this.GetType().Assembly)
-                       .Select(x => new EntityTypeInfo() { Type = x });
-        }
+        modelBuilder.Entity<EventTracker>().ToTable("cust_eventtracker");
+        modelBuilder.Entity<Customer>().ToTable("cust_customer");
+        modelBuilder.Entity<Finance>().ToTable("cust_finance");
+        modelBuilder.Entity<TransactionLog>().ToTable("cust_transactionlog");
     }
 }
 ```
-
-### Step 4: Dependency Injection
-The `EntityInfo` is registered automatically via the `services.AddEfCoreContextWithRepositories()` extension method during application startup.
-
-### Step 5: Migrations
-1. Set the API project (e.g., `Adnc.Cus.WebApi`) as the **Startup Project**.
-2. Open the **Package Manager Console**.
-3. Set the default project to the Migrations project (e.g., `Adnc.Cus.Migrations`).
-4. Run `add-migration InitialCreate`.
-5. Run `update-database`.
+## Step 4: Generate migration code and update it to the database
+- Set`Adnc.Demo.Cust.Api`as the startup project (the migration command will read the database connection string from this project)
+- Open Nuget's package manager console in the VS tool (Tools => Nuget Package Manager => Package Manager Console)
+- Execute command`add-migration Update2021030401`. After successful execution, the migration file will be generated in the`Migrations`directory.
+- Execute command`update-database`to update to the database.
 
 ---
 
-## How Entities Relate to the Database
+# How entities are associated with the databaseLet’s look at the source code of the`AdncDbContext`class of the`Adnc.Infra.Repository.EfCore`project.
 
-ADNC uses a custom `AdncDbContext` that automatically applies configurations:
+```csharp
+public abstract class AdncDbContext(DbContextOptions options, IEntityInfo entityInfo, Operater operater) : DbContext(options)
+{
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        //efcore7 support this feature , default is WhenNeeded
+        //Database.AutoTransactionBehavior = AutoTransactionBehavior.WhenNeeded;
+        SetAuditFields();
+        var result = base.SaveChangesAsync(cancellationToken);
+        return result;
+    }
 
-1. **Table Naming**: Automatically converts table and column names to lowercase.
-2. **Comments**: Reads `<summary>` tags from your C# code and applies them as database comments.
-3. **Fluent API**: Automatically loads all configurations from the assembly via `modelBuilder.ApplyConfigurationsFromAssembly`.
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        entityInfo.OnModelCreating(modelBuilder);
+    }
 
----
-*If this helps, please Star & Fork.*
+    protected virtual void SetAuditFields()
+    {
+        var allBasicAuditEntities = ChangeTracker.Entries<IBasicAuditInfo>().Where(x => x.State == EntityState.Added);
+        allBasicAuditEntities.ForEach(entry =>
+        {
+            entry.Entity.CreateBy = operater.Id;
+            entry.Entity.CreateTime = DateTime.Now;
+        });
+
+        var auditFullEntities = ChangeTracker.Entries<IFullAuditInfo>().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added);
+        auditFullEntities.ForEach(entry =>
+        {
+            entry.Entity.ModifyBy = operater.Id;
+            entry.Entity.ModifyTime = DateTime.Now;
+        });
+    }
+}
+```
+
+-- over --If you can help, please feel free to Star & Fork.

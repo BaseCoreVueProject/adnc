@@ -1,65 +1,148 @@
-# ADNC ID Generator: Snowflake Algorithm
+# ADNC Id generator (snowflake algorithm)
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-Primary keys can be generated using various methods: auto-incrementing IDs, GUIDs, Redis `INCR`, or the Snowflake algorithm. ADNC adopts the Snowflake algorithm based on [Yitter](https://github.com/yitter/IdGenerator) to balance uniqueness and high performance in distributed environments.
+There are many ways to generate primary keys, such as auto-increment ID, GUID, Redis'`INCR`, snowflake algorithm, etc. There is already a lot of information on the pros and cons of various options, so I won’t go into details here. ADNC uses the snowflake algorithm based on[Yitter](https://github.com/yitter/IdGenerator)
 
-## Introduction to Yitter Snowflake
+to generate IDs to take into account uniqueness and high performance in a distributed environment.
 
-Traditional Snowflake IDs use 64 bits (1 sign bit, 41 timestamp bits, 10 machine ID bits, and 12 sequence bits). A major drawback is that these IDs exceed the maximum safe integer for JavaScript (`Number.MAX_SAFE_INTEGER`), leading to parsing errors in the frontend.
+## Introduction to Yitter Snowflake Algorithm
+The ID of the traditional snowflake algorithm consists of a 1-bit sign bit, a 41-bit timestamp, a 10-bit worker machine ID, and a 12-bit self-increasing sequence number, totaling 64 bits (long type). Its main disadvantage is that the generated ID is too long, exceeding the maximum safe integer of the JavaScript Number type, causing JS to fail to parse it correctly.Yitter has optimized the traditional snowflake algorithm and supports customizing the length of "work machine ID" and "auto-increment serial number", which are both 6 digits by default. Under this configuration, no generated ID will exceed the maximum value of the JS Number type for 50 years. At the same time,[Yitter](https://github.com/yitter/IdGenerator)’s snowflake algorithm also solves the problem of system time dialback and provides detailed documentation and test cases.
 
-Yitter optimizes the traditional algorithm by allowing customizable bit lengths for the machine ID and sequence. In the default configuration (6 bits each), IDs generated within 50 years will not exceed the JS safe integer limit.
+### Yitter algorithm characteristics✔ Generate integer numbers that increase monotonically over time (not guaranteed to be continuous), have shorter lengths, and will not exceed the maximum value of the JS Number type in 50 years (default configuration).✔ The generation speed is faster, 2-5 times that of the traditional snowflake algorithm, 500,000 can be generated in 0.1 seconds (based on 8th generation low-voltage i7).✔ Support time callback processing. For example, if the server time is set back 1 second, the algorithm can automatically adapt and generate a unique ID for the critical time.✔Supports manual insertion of new IDs. When the business needs to generate new IDs in historical time, the reserved space can generate 5,000 IDs per second.✔ Does not rely on any external cache or database (the dynamic library that automatically registers WorkerId in the K8s environment relies on Redis).✔ Basic functionality works out of the box, no configuration files or database connections required.
+## Yitter performance data(Parameters: 10-bit auto-increasing sequence, 1000 drift maximum values)
+| Continuous requests | 5K | 5W | 50W |
+| 
 
-### Key Features of Yitter
+------------
 
-- **Short & JS-Friendly**: Integer IDs that are shorter and safe for JS `Number` types for over 50 years.
-- **High Performance**: 2-5 times faster than traditional Snowflake; can generate 500k IDs in 0.1s.
-- **Clock Backwards Handling**: Automatically adapts if the system clock drifts backwards (e.g., by 1 second).
-- **History Insertion**: Supports generating unique IDs for historical timestamps.
-- **Zero External Dependencies**: Does not require external caches or databases (except for dynamic `WorkerId` registration in K8s).
+ | 
 
-### Handling Clock Backwards
+-------
 
-1. Uses reserved sequences from historical timeframes when a clock drift is detected.
-2. Supports adapting to drift up to a configurable threshold.
+ | 
 
-## Configuring Yitter Snowflake
+------
 
-Three core parameters are required:
+ | 
 
-| Parameter | Description |
-| --- | --- |
-| `WorkerIdBitLength` | Bits for machine ID (default: 6, supporting 64 instances). |
-| `SeqBitLength` | Bits for sequence (default: 6, determines IDs per ms). |
-| `WorkerId` | The unique ID of the machine/instance. |
+------
 
-The sum of `WorkerIdBitLength` and `SeqBitLength` must not exceed 22.
+ |
+| Traditional Snowflake Algorithm | 0.0045s | 0.053s | 0.556s |
+| Snowflake Drift Algorithm | 0.0015s | 0.012s | 0.113s |? Ultimate performance: 5 million/s ~ 30 million/s (all test data are calculated based on 8th generation low-voltage i7).
+## How Yitter handles time dialback
 
-### Dynamic WorkerId Allocation
+1. When the system time dialback occurs, the algorithm uses the reserved sequence number of the historical time series to generate a new ID.2. The ID number generated by the callback is placed first by default, and can also be adjusted to be later.3. Allow time to be set back to the algorithm’s preset base (parameters are adjustable).
 
-In distributed microservices, `WorkerId` must be unique across instances. ADNC manages this by storing all possible `WorkerId`s in a Redis `zset` (value = WorkerId, score = timestamp).
+## Use of Yitter snowflake algorithm
+The Yitter algorithm has three core parameters that need to be configured:
+| Parameters | Description |
+| 
 
-1. On startup, the instance uses a Lua script to grab the `WorkerId` with the smallest score from Redis.
-2. The score is updated to the current timestamp.
-3. A background service (`WorkerNodeHostedService`) refreshes the score every minute.
-4. When the instance stops, it resets the score (effectively releasing the `WorkerId`).
+------------------
 
-## Usage Example
+ | 
+
+---------------------------------------------------------------
+
+ |
+| WorkerIdBitLength | The machine code bit length, which determines the maximum value of WorkerId. The default value is 
+
+6. A length of 6 means 64 instances are supported. |
+| SeqBitLength | Sequence bit length, default value 6, determines the number of IDs generated per millisecond. Rule: WorkerIdBitLength + SeqBitLength does not exceed 
+
+22. |
+| WorkerId | Machine ID. There is no default value, it must be globally unique and set by the program. |The two parameters WorkerIdBitLength and SeqBitLength can be configured directly in the code:<br/>
+
+```csharp
+public static class IdGenerater
+{
+    private static bool _isSet = false;
+    private static readonly object _locker = new();
+
+    public static byte WorkerIdBitLength => 6;
+    public static byte SeqBitLength => 6;
+    public static short MaxWorkerId => (short)(Math.Pow(2.0, WorkerIdBitLength) - 1);
+    public static short CurrentWorkerId { get; private set; } = -1;
+    
+    // Other business logic.
+}
+```
+## How to get WorkerId
+For a monolithic architecture system, the WorkerId can be obtained directly from the configuration file; for a distributed or microservice architecture, the WorkerId needs to be obtained dynamically when the project is started. ADNC will pre-generate all WorkerIds and save them in Redis's zset (value = WorkerId, score = timestamp). When the instance starts, obtain the WorkerId with the smallest score from zset through the Lua script, and synchronously update the score to the current timestamp. After the WorkerId is obtained, the score of the current WorkerId is refreshed every minute by the scheduled service.
+
+```csharp
+namespace Adnc.Infra.IdGenerater.Yitter
+{
+    public class WorkerNodeHostedService : BackgroundService
+    {
+        public WorkerNodeHostedService(ILogger<WorkerNodeHostedService> logger
+            , WorkerNode workerNode
+            , string serviceName)
+        {
+                _serviceName = serviceName;
+                _workerNode = workerNode;
+                _logger = logger;
+        }
+
+        public async override Task StartAsync(CancellationToken cancellationToken)
+        {
+            // Pre-generate all worker IDs and save them to Redis.
+            await _workerNode.InitWorkerNodesAsync(_serviceName);
+            // Get a worker ID.
+            var workerId = await _workerNode.GetWorkerIdAsync(_serviceName);
+            // Assign the acquired worker ID to YitterSnowFlake.CurrentWorkerId.
+            YitterSnowFlake.CurrentWorkerId = (short)workerId;
+            await base.StartAsync(cancellationToken);
+        }
+
+        
+        public async override Task StopAsync(CancellationToken cancellationToken)
+        {
+            await base.StopAsync(cancellationToken);
+
+            var subtractionMilliseconds = 0 - (_millisecondsDelay * 1.5);
+            var score = DateTime.Now.AddMilliseconds(subtractionMilliseconds).GetTotalMilliseconds();
+            // Reclaim the current worker ID when the instance stops.
+            await _workerNode.RefreshWorkerIdScoreAsync(_serviceName, YitterSnowFlake.CurrentWorkerId, score);
+        }
+        
+        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await Task.Delay(_millisecondsDelay, stoppingToken);
+
+                    if (stoppingToken.IsCancellationRequested) break;
+
+                    // Periodically refresh the score of YitterSnowFlake.CurrentWorkerId.
+                    await _workerNode.RefreshWorkerIdScoreAsync(_serviceName, YitterSnowFlake.CurrentWorkerId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, ex);
+                    await Task.Delay(_millisecondsDelay / 3, stoppingToken);
+                }
+            }
+        }  
+    }
+}
+```
+## How to call Yitter
 
 ```csharp
 using Adnc.Infra.IdGenerater.Yitter;
 
 namespace Adnc.XXX.Application.Services
 {
-    public class xxxAppService : AbstractAppService
+    public class xxxAppService : AbstractAppService, IxxxAppService
     {
-        public void CreateEntity()
-        {
-            var id = IdGenerater.GetNextId(); // Generate Snowflake ID
-        }
+        var id = IdGenerater.GetNextId(); // Get an ID.
     }
 }
 ```
-
 ---
-*If this helps, please Star & Fork.*
+-- over --If you can help, welcome[star & fork](https://github.com/alphayu/adnc).

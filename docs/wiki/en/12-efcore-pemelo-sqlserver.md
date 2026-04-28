@@ -1,93 +1,175 @@
-# ADNC Repository Usage: Switching Database Types
+# ADNC Repository Usage - Switching Database Types
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-This article describes how to switch database types in ADNC. Theoretically, ADNC supports any database supported by EF Core. While ADNC defaults to MariaDB/MySQL, this guide uses switching to **SQL Server** as an example.
+This article explains how to switch the database type used by the `ADNC` repository layer. In principle, ADNC can switch smoothly as long as the database type is supported by EF Core. ADNC uses MariaDB/MySQL by default. This article uses switching from the default database type to SQL Server as an example; the steps for other database types are similar.
 
-## Scenarios
-1. **Global Switch**: All services switch to a new database type.
-2. **Partial Switch**: Different services use different database types (e.g., Service A uses MySQL, Service B uses SQL Server).
+There are usually two database switching scenarios:
 
----
+1. Global switching: The database type of all services is switched to another type, such as from MySQL to SQL Server.
+2. Partial switching: Different services use different database types, such as service A using MySQL, service B using SQL Server, and service C using Oracle. ADNC supports different database types per service.
 
 ## Global Switch
 
-To switch globally, you need to modify three main files (example: MySql to SqlServer):
+Global switching requires adjusting three files. The following example switches the default MySQL provider to SQL Server.
 
-### 1. `AbstractApplicationDependencyRegistrar.Repositories.cs`
-
-Update the `AddEfCoreContext` method to use the SQL Server provider:
+- `AbstractApplicationDependencyRegistrar.Repositories.cs`
 
 ```csharp
-protected virtual void AddEfCoreContext()
-{
-    AddOperater(_services);
-    var connectionString = _configuration[NodeConsts.SqlServer_ConnectionString];
-    var migrationsAssemblyName = _serviceInfo.MigrationsAssemblyName;
+/*project:Adnc.Shared.Application*/
+namespace Adnc.Shared.Application.Registrar;
 
-    _services.AddAdncInfraEfCoreSQLServer(RepositoryOrDomainLayerAssembly, optionsBuilder =>
+public abstract partial class AbstractApplicationDependencyRegistrar 
+{
+	/// <summary>
+    /// Registers EFCoreContext.
+    /// </summary>
+        protected virtual void AddEfCoreContext()
     {
-        optionsBuilder.UseLowerCaseNamingConvention();
-        optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
+        AddOperater(_services);
+
+        var connectionString = _configuration[NodeConsts.SqlServer_ConnectionString] ?? throw new InvalidDataException("SqlServer ConnectionString is null");
+        var migrationsAssemblyName = _serviceInfo.MigrationsAssemblyName;
+        _services.AddAdncInfraEfCoreSQLServer(RepositoryOrDomainLayerAssembly, optionsBuilder =>
         {
-            sqlOptions.MigrationsAssembly(migrationsAssemblyName);
-        });
-    }, _lifetime);
+            optionsBuilder.UseLowerCaseNamingConvention();
+            optionsBuilder.UseSqlServer(connectionString, optionsBuilder =>
+            {
+                optionsBuilder.MinBatchSize(4)
+                                        .MigrationsAssembly(migrationsAssemblyName)
+                                        .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            });
+        }, _lifetime);
+    }
 }
 ```
+- `AbstractApplicationDependencyRegistrar.EventBus.cs`
 
-### 2. `AbstractApplicationDependencyRegistrar.EventBus.cs`
-
-Update the CAP configuration to use SQL Server:
+  > option.UseMySQL => option.UseSqlServer
 
 ```csharp
-protected virtual void AddCapEventBus(...)
+/*project:Adnc.Shared.Application*/
+namespace Adnc.Shared.Application.Registrar;
+
+public abstract partial class AbstractApplicationDependencyRegistrar
 {
-    // ...
-    Services.AddAdncInfraCap(subscribers, capOptions =>
+    protected virtual void AddCapEventBus(IEnumerable<Type> subscribers, Action<FailedInfo>? failedThresholdCallback = null)
     {
-        // ...
-        capOptions.UseSqlServer(config =>
-        {
-            config.ConnectionString = connectionString;
-            config.Schema = "cap";
-        });
-    }, null, Lifetime);
+        ArgumentNullException.ThrowIfNull(subscribers, nameof(subscribers));
+        Checker.Argument.ThrowIfNullOrCountLEZero(subscribers, nameof(subscribers));
+
+        var connectionString = Configuration.GetValue<string>(NodeConsts.SqlServer_ConnectionString) ?? throw new InvalidDataException("SqlServer ConnectionString is null");
+        var rabbitMQOptions = Configuration.GetRequiredSection(NodeConsts.RabbitMq).Get<RabbitMQOptions>() ?? throw new InvalidDataException(nameof(RabbitMQOptions));
+        var clientProvidedName = ServiceInfo.Id;
+        var version = ServiceInfo.Version;
+        var groupName = $"cap.{ServiceInfo.ShortName}.{this.GetEnvShortName()}";
+        Services.AddAdncInfraCap(subscribers, capOptions =>
+                                 {
+                                    SetCapBasicInfo(capOptions, version, groupName,failedThresholdCallback);
+                                    SetCapRabbitMQInfo(capOptions, rabbitMQOptions, clientProvidedName);
+                                    // Requires a reference to DotNetCore.CAP.SqlServer.
+                                    option.UseSqlServer(config =>
+                                    {
+                                        config.ConnectionString = connectionString;
+                                        config.Schema = "cap";
+                                    });
+                                 }, null, Lifetime);
+    }
 }
 ```
+- `appsettings.Development.json`
 
-### 3. `appsettings.Development.json`
-
-Replace the `MySql` node with `SqlServer`:
+> Delete the MySql node and add the SqlServer node.
 
 ```json
-"SqlServer": {
-    "ConnectionString": "Data Source=SERVER;Initial Catalog=adnc_db;User Id=sa;Password=pwd;"
-}
+  "SqlServer": {
+    "ConnectionString": "Data Source=114.132.157.111;Initial Catalog=adnc_xxx_dev;User Id=sa;Password=xxx;"
+  },
 ```
 
-### 4. Project References
-Remove `Adnc.Infra.Repository.EfCore.Mysql` and add `Adnc.Infra.Repository.EfCore.SqlServer`.
-
----
+- Remove the `Adnc.Infra.Repository.EfCore.MySQL.csproj` reference from the project file and reference `Adnc.Infra.Repository.EfCore.SqlServer.csproj`.
 
 ## Partial Switch
 
-For a partial switch (e.g., only the Warehouse service uses SQL Server), override the relevant methods in the specific service's `DependencyRegistrar`:
+Partial switching is relatively simple. You only need to override `AddCapEventBus` and `AddEfCoreContext`. The following example uses the whse service.
 
-1. Add the SQL Server infrastructure reference to the specific service project.
-2. Override `AddEfCoreContext` and `AddCapEventBus` in the service's `DependencyRegistrar.cs`.
-3. Update the health check registration to use SQL Server.
+1. The `Adnc.Whse.Application` project references `Adnc.Infra.Repository.EfCore.SqlServer.csproj`.
 
 ```csharp
-public override void AddAdncServices()
+namespace Adnc.Whse.Application.Registrar;
+
+public sealed class DependencyRegistrar(IServiceCollection services, IServiceInfo serviceInfo, IConfiguration configuration, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    : AbstractApplicationDependencyRegistrar(services, serviceInfo, configuration, lifetime)
+{        
+    protected override void AddCapEventBus(IEnumerable<Type> subscribers, Action<FailedInfo>? failedThresholdCallback = null)
+    {
+        var connectionString = _configuration[NodeConsts.SqlServer_ConnectionString] ?? throw new InvalidDataException("SqlServer ConnectionString is null");
+        var rabbitMQOptions = _configuration.GetRequiredSection(NodeConsts.RabbitMq).Get<RabbitMQOptions>() ?? throw new InvalidDataException(nameof(NodeConsts.RabbitMq));
+        var clientProvidedName = _serviceInfo.Id;
+        var version = _serviceInfo.Version;
+        var groupName = $"cap.{_serviceInfo.ShortName}.{this.GetEnvShortName()}";
+        _services.AddAdncInfraCap(subscribers, capOptions =>
+        {
+            SetCapBasicInfo(capOptions, version, groupName, failedThresholdCallback);
+            SetCapRabbitMQInfo(capOptions, rabbitMQOptions, clientProvidedName);
+            capOptions.UseSqlServer(sqlServerOptions =>
+            {
+                sqlServerOptions.ConnectionString = connectionString;
+                sqlServerOptions.Schema = "cap";
+            });
+        }, null, _lifetime);
+    }
+
+    protected override void AddEfCoreContext()
+    {
+        AddOperater(_services);
+
+        var connectionString = _configuration[NodeConsts.SqlServer_ConnectionString] ?? throw new InvalidDataException("SqlServer ConnectionString is null");
+        var migrationsAssemblyName = _serviceInfo.MigrationsAssemblyName;
+        _services.AddAdncInfraEfCoreSQLServer(RepositoryOrDomainLayerAssembly, optionsBuilder =>
+        {
+            optionsBuilder.UseLowerCaseNamingConvention();
+            optionsBuilder.UseSqlServer(connectionString, optionsBuilder =>
+            {
+                optionsBuilder.MinBatchSize(4)
+                                        .MigrationsAssembly(migrationsAssemblyName)
+                                        .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            });
+        }, _lifetime);
+    }
+}        
+```
+
+2. The `Adnc.Whse.Migrations` project references `Adnc.Infra.Repository.EfCore.SqlServer.csproj` and removes the `Adnc.Infra.Repository.EfCore.MySQL.csproj` reference.
+
+3. Register the SQL Server health check in `DependencyRegistrar.cs`.
+
+```csharp
+namespace Adnc.Whse.WebApi.Registrar;
+
+public sealed class DependencyRegistrar(IServiceCollection services, IServiceInfo serviceInfo, IConfiguration configuration) : AbstractWebApiDependencyRegistrar(services, serviceInfo, configuration)
 {
-    _services.AddHealthChecks()
-        .AddSqlServer(connectionString)
-        .AddRedis(...)
-        .AddRabbitMQ(...);
+    public override void AddAdncServices()
+    {
+        _services.AddHealthChecks(checksBuilder =>
+        {
+            checksBuilder
+                    .AddSqlServer(connectionString) // sqlserver 
+                    .AddRedis(redisSecton)
+                    .AddRabbitMQ(rabbitSecton, clientProvidedName);
+        });
+    }
 }
 ```
 
+- `appsettings.Development.json`
+
+> Delete the MySql node and add the SqlServer node.
+
+```json
+  "SqlServer": {
+    "ConnectionString": "Data Source=114.132.157.111;Initial Catalog=adnc_xxx_dev;User Id=sa;Password=xxx;"
+  },
+```
 ---
-*If this helps, please Star & Fork.*
+-- over --If you can help, please feel free to Star & Fork.

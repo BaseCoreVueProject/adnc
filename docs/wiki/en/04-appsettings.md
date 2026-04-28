@@ -1,27 +1,30 @@
-# ADNC Configuration Nodes Detailed Explanation
+# ADNC configuration node details
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-## 1. Shared Service Configuration
+## 1. Service public configuration> `adnc\src\Demo\Shared\resources\appsettings.shared.Development.json`
 
-> `adnc\src\Demo\Shared\resources\appsettings.shared.Development.json`
+## 1.1 RegisterType
 
-### 1.1 RegisterType
-
-- **Service Registration Type**:
-  - `Direct`: No registration. Inter-service calls use direct URIs (see `RpcInfo`).
-  - `Consul`: Registered to Consul. Inter-service calls use service names (see `RpcInfo`).
-  - `CoreDns`: Registered to K8S. Inter-service calls use internal K8S domain names (see `RpcInfo`).
+- Service registration type:
+  
+- `Direct`: No registration is performed, calls between services are through URI addresses, see`RpcInfo`node for details.
+  
+- `Consul`: registered to Consul, calls between services are through service names, see`RpcInfo`node for details.
+  
+- `CoreDns`: registered to K8S, calls between services are made through the K8S internal domain name, see`RpcInfo`node for details.
 
 ```json
 "RegisterType": "Direct"
 ```
 
-### 1.2 Basic
+## 1.2 Basic
 
-- **Basic Auth Info**: Used for inter-service authentication.
-  - `UserName`: Username
-  - `Password`: Password
+- `Basic`authentication information: calls between services use`Basic`authentication
+  
+- `UserName`: Username
+  
+- `Password`: Password
 
 ```json
 "Basic": {
@@ -30,17 +33,23 @@
 }
 ```
 
-### 1.3 RpcInfo
+## 1.3 RpcInfo
 
-- **RPC Configuration**:
-  - `Polly:Enable`: Whether to enable Polly policies.
-    - `true`: Enabled
-    - `false`: Disabled
-  - `Address`: Service address configuration.
-    - `Service`: Service name.
-    - `Direct`: Service address when `RegisterType = Direct`.
-    - `Consul`: Service address when `RegisterType = Consul`.
-    - `CoreDns`: Service address when `RegisterType = CoreDns`.
+- Service call configuration information:
+  
+- `Polly:Enable`: Whether to enable the`Polly`policy
+    
+- `true`: enabled
+    
+- `false`: Disabled
+  
+- `Address`: Service address configuration
+    
+- `Service`: Service name
+    
+- `Direct`: Service address at`RegisterType = Direct`
+- `Consul`: Service address at`RegisterType = Consul`
+- `CoreDns`: Service address at`RegisterType = CoreDns`
 
 ```json
 "RpcInfo": {
@@ -70,14 +79,17 @@
 }
 ```
 
-### 1.4 Redis
+## 1.4 Redis
 
-- **Redis Configuration**:
-  - `Provider`: Client driver (currently only `StackExchange` is supported).
-  - `EnableLogging`: Whether to enable logging for Redis operations.
-  - `SerializerName`: Serialization method (`json`, `binary`, `proto`).
-  - `EnableBloomFilter`: Whether to enable Bloom Filter support.
-  - `Dbconfig:ConnectionString`: Redis connection string.
+- `Redis`: cache database configuration information
+  
+- `Provider`: client driver, currently only supports`StackExchange`
+- `EnableLogging`: Whether to enable logging
+  
+- `SerializerName`: serialization mode, supports`json`,`binary`,`proto`
+- `EnableBloomFilter`: Whether to enable bloom filter
+  
+- `Dbconfig:ConnectionString`: Redis connection string
 
 ```json
 "Redis": {
@@ -86,25 +98,36 @@
     "SerializerName": "json",
     "EnableBloomFilter": false,
     "Dbconfig": {
-        "ConnectionString": "SERVER_IP:PORT,password=PASSWORD,defaultDatabase=0,ssl=false,sslHost=null,connectTimeout=4000,allowAdmin=true"
+        "ConnectionString": "62.234.187.128:13379,password=football,defaultDatabase=0,ssl=false,sslHost=null,connectTimeout=4000,allowAdmin=true"
     }
 }
 ```
 
-### 1.5 Caching
+## 1.5 Caching
 
-- **Caching Configuration** (Depends on Redis):
-  - `MaxRdSecond`: Maximum random seconds added to expiration time to prevent cache stampede.
-  - `LockMs`: Distributed lock duration (milliseconds).
-  - `SleepMs`: Sleep duration when failing to acquire a distributed lock (milliseconds).
-  - `EnableLogging`: Whether to enable cache operation logs.
-  - `PollyTimeoutSeconds`: Polly timeout for cache-database sync compensation mechanisms.
-  - `PenetrationSetting`: Cache penetration protection settings.
-    - `Disable`: Whether to disable protection.
-    - `BloomFilterSetting`: Bloom Filter configuration.
-      - `Name`: Name of the Bloom Filter.
-      - `Capacity`: Capacity.
-      - `ErrorRate`: False positive rate.
+- `Caching`: Cache related configuration information (depends on Redis implementation)
+  
+- `MaxRdSecond`: The maximum random number of seconds to increase the cache expiration time, used to prevent cache avalanches
+  
+- `LockMs`: distributed lock duration (milliseconds)
+  
+- `SleepMs`: Sleep duration (milliseconds) when the distributed lock is not acquired
+  
+- `EnableLogging`: Whether to enable cache operation logs
+  
+- `PollyTimeoutSeconds`: Polly timeout, used for cache and database synchronization compensation mechanism
+  
+- `PenetrationSetting`: Cache penetration protection related configurations
+    
+- `Disable`: Whether to disable penetration protection
+    
+- `BloomFilterSetting`: Bloom filter configuration
+      
+- `Name`: Bloom filter name
+      
+- `Capacity`: Capacity
+      
+- `ErrorRate`: False positive rate
 
 ```json
 "Caching": {
@@ -124,65 +147,79 @@
 }
 ```
 
-### 1.6 RabbitMQ
+## 1.6 RabbitMQ
 
-- **RabbitMQ Configuration**:
-  - `HostName`: RabbitMQ host address.
-  - `Port`: Port number.
-  - `VirtualHost`: Virtual host name.
-  - `UserName`: Username.
-  - `Password`: Password.
+- `RabbitMQ`: Message queue configuration information
+  
+- `HostName`: RabbitMQ host address
+  
+- `Port`: port number
+  
+- `VirtualHost`: virtual host name
+  
+- `UserName`: Username
+  
+- `Password`: Password
 
 ```json
 "RabbitMq": {
-    "HostName": "SERVER_IP",
+    "HostName": "62.234.187.128",
     "Port": "5672",
     "VirtualHost": "/",
     "UserName": "admin",
-    "Password": "password"
+    "Password": "football"
 }
 ```
 
-### 1.7 SysLogDb
+## 1.7 SysLogDb
 
-- **System Log Database**: Used for login/audit logs.
-  - `DbType`: Database type (`mysql`, `sqlserver`, `oracle`).
-  - `ConnectionString`: Database connection string.
+- `SysLogDb`: Login/audit log database configuration information
+  
+- `DbType`: database type, supports`mysql`,`sqlserver`,`oracle`
+- `ConnectionString`: Database connection string
 
 ```json
 "SysLogDb": {
     "DbType": "mysql",
-    "ConnectionString": "Server=SERVER_IP;Port=PORT;database=adnc_syslog;uid=USERNAME;pwd=PASSWORD;connection timeout=30;"
+    "ConnectionString": "Server=62.234.187.128;Port=13308;database=adnc_syslog;uid=root;pwd=alpha.netcore;connection timeout=30;"
 }
 ```
 
-### 1.8 Consul
+## 1.8 Consul
 
-- **Consul Configuration**:
-  - `ServiceName`: Service name placeholder.
-  - `ServerTags`: Service tags.
-  - `HealthCheckUrl`: Health check endpoint.
-  - `HealthCheckIntervalInSecond`: Health check interval (seconds).
-  - `DeregisterCriticalServiceAfter`: Time to deregister service after failure (seconds).
-  - `Timeout`: Health check timeout (seconds).
+- `Consul`: Configuration information related to service registration and discovery
+  
+- `ServiceName`: Service name placeholder
+  
+- `ServerTags`: Service tag
+  
+- `HealthCheckUrl`: Health check address
+  
+- `HealthCheckIntervalInSecond`: Health check interval (seconds)
+  
+- `DeregisterCriticalServiceAfter`: Time to log out of the service after failing the health check (seconds)
+  
+- `Timeout`: Timeout (seconds)
 
 ```json
 "Consul": {
     "ServiceName": "$SERVICENAME",
     "ServerTags": [ "urlprefix-/$SHORTNAME" ],
-    "HealthCheckUrl": "$RELATIVEROOTPATH/health-CHECK_ID",
+    "HealthCheckUrl": "$RELATIVEROOTPATH/health-24b01005-a76a-4b3b-8fb1-5e0f2e9564fb",
     "HealthCheckIntervalInSecond": 6,
     "DeregisterCriticalServiceAfter": 20,
     "Timeout": 6
 }
 ```
 
-### 1.9 Logging
+## 1.9 Logging
 
-- **Logging Configuration**:
-  - `LogContainer`: Logging target (`console`, `file`, `loki`), corresponding to NLog config files in `adnc\src\Demo\Shared\resources\NLog`.
-  - `LogLevel`: Log levels for different categories.
-- **Loki**: Connection info for Loki (used if `Logging:LogContainer = loki`).
+- `Logging`: Log related configuration information
+  
+- `LogContainer`: Logging mode, supports`console`,`file`,`loki`, corresponding to the configuration files in the`adnc\src\Demo\Shared\resources\NLog`directory respectively
+  
+- `LogLevel`: Log level configuration
+- `Loki`: When`Logging:LogContainer = loki`, read Loki connection information from this node
 
 ```json
 "Logging": {
@@ -195,30 +232,30 @@
     }
 },
 "Loki": {
-    "Endpoint": "http://SERVER_IP:3100",
+    "Endpoint": "http://10.2.8.5:3100",
     "UserName": "",
     "Password": ""
 }
 ```
 
-### 1.10 CorsHosts
+## 1.10 CorsHosts
 
-- **CorsHosts**: Allowed domains for CORS. `*` means all domains.
+- `CorsHosts`: Browser cross-domain domain name configuration information,`*`indicates that all domain names are allowed to access
 
 ```json
 "CorsHosts": "*"
 ```
 
-### 1.11 JWT
+## 1.11 JWT
 
-- **JWT Configuration**: Settings for token creation and validation.
+- `JWT`: Token creation and authentication related configuration information
 
 ```json
 "JWT": {
     "ValidateIssuer": true,
     "ValidIssuer": "adnc",
     "ValidateIssuerSigningKey": true,
-    "SymmetricSecurityKey": "alphadotnetcoresecurity_KEY",
+    "SymmetricSecurityKey": "alphadotnetcoresecurity24b010055e0f2e9564fb",
     "ValidateAudience": true,
     "ValidAudience": "manager",
     "ValidateLifetime": true,
@@ -230,20 +267,23 @@
 }
 ```
 
-### 1.12 SkyWalking
+## 1.12 SkyWalking
 
-- **SkyWalking Tracing Configuration**:
-  - `ServiceName`: Registered service name for tracing.
+- `SkyWalking`: Link tracking client configuration information
+  
+- `ServiceName`: Service name
 
 ```json
 "SkyWalking": {
     "ServiceName": "$SERVICENAME",
     "Namespace": "adnc",
-    "HeaderVersions": [ "sw8" ],
+    "HeaderVersions": [
+        "sw8"
+    ],
     "Sampling": {
         "SamplePer3Secs": -1,
         "Percentage": -1.0,
-        "IgnorePaths": [ "/*/health-*", "**/appsettings", "**/swagger.json", "**/loki/api/v1/push" ]
+        "IgnorePaths": [ "/*/health-24b01005-a76a-4b3b-8fb1-5e0f2e9564fb", "http://**/appsettings", "/**/swagger.json", "http://**/loki/api/v1/push" ]
     },
     "Logging": {
         "Level": "Error",
@@ -255,7 +295,7 @@
         "QueueSize": 30000,
         "BatchSize": 3000,
         "gRPC": {
-            "Servers": "SERVER_IP:11800",
+            "Servers": "62.234.187.128:11800",
             "Timeout": 10000,
             "ConnectTimeout": 10000,
             "ReportTimeout": 600000,
@@ -265,51 +305,60 @@
 }
 ```
 
-## 2. Service-Specific Configuration
-
-> Examples for `Admin.Api` in Development and Production:
-> `adnc\src\Demo\Admin.Api\appsettings.Development.json`
-> `adnc\src\Demo\Admin.Api\appsettings.Production.json`
+2. Single service exclusive configuration> The following takes the development environment and production environment configuration of the Admin.Api service as an example:
+> adnc\src\Demo\Admin.Api\appsettings.Development.json
+> adnc\src\Demo\Admin.Api\appsettings.Production.json
 
 ### 2.1 `appsettings.Development.json`
 
-- `ConfigurationType`:
-  - `File`: Loads `appsettings.shared.Development.json` on startup.
-- `Mysql`: Business database connection string.
-- `Kestrel`: Service URL and port configuration.
+- `ConfigurationType`: Configuration file type
+  
+- `File`: Load`appsettings.shared.Development.json`when the service starts
+- `MySQL`: Business database connection information
+- `Kestrel`: Service URL and port configuration information
 
 ```json
 {
     "ConfigurationType": "File",
-    "Mysql": {
-        "ConnectionString": "Server=127.0.0.1;Port=PORT;database=adnc_admin;uid=root;pwd=PASSWORD;connection timeout=30;"
+    "MySQL": {
+        "ConnectionString": "Server=127.0.0.1;Port=13308;database=adnc_admin;uid=root;pwd=alpha.netcore;connection timeout=30;"
     },
     "Kestrel": {
         "Endpoints": {
-            "Default": { "Url": "http://0.0.0.0:50010" },
-            "Grpc": { "Url": "http://0.0.0.0:50011", "Protocols": "Http2" }
+            "Default": {
+                "Url": "http://0.0.0.0:50010"
+            },
+            "gRPC": {
+                "Url": "http://0.0.0.0:50011",
+                "Protocols": "Http2"
+            }
         }
     }
 }
 ```
 
-### 2.2 `appsettings.Production.json`
+## 2.2 `appsettings.Production.json`
 
-- `ConfigurationType`:
-  - `Consul`: Fetches configuration from Consul on startup.
-- `Consul`: Connection info for fetching configurations.
+- `ConfigurationType`: Configuration file type
+  
+- `Consul`: Get configuration from Consul when service starts
+- `Consul`: Consul related configuration information
+  
+- `ConsulUrl`: Consul service address
+  
+- `ConsulKeyPath`: Configuration information Key path
 
 ```json
 {
   "ConfigurationType": "Consul",
   "Consul": {
-    "ConsulUrl": "http://SERVER_IP:8500",
+    "ConsulUrl": "http://10.2.8.5:8500",
     "ConsulKeyPath": "adnc/production/shared/appsettings,adnc/production/$SHORTNAME/appsettings"
   }
 }
 ```
 
-#### 2.3 Configuration Loading Code
+### 2.3 Obtain configuration related code
 
 ```csharp
 public static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder, IServiceInfo serviceInfo)
@@ -332,12 +381,24 @@ public static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder 
                 builder.Configuration.AddConsulConfiguration(consulOption, true);
             }
             break;
-        // ...
+        case ConfigurationTypeConsts.Nacos:
+            throw new NotImplementedException(nameof(ConfigurationTypeConsts.Nacos));
+        case ConfigurationTypeConsts.Etcd:
+            throw new NotImplementedException(nameof(ConfigurationTypeConsts.Etcd));
+        default:
+            throw new NotImplementedException(nameof(configurationType));
     }
+    
+    // ....
+
     return builder;
 }
 ```
 
----
+-
 
-*If this helps, please Star & Fork.*
+----
+
+-
+
+-- over --If you can help, please feel free to Star & Fork.

@@ -1,19 +1,19 @@
 # ADNC Quick Docker Deployment Guide
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
 ## 1. System Requirements
 
-1. Recommended OS: `Ubuntu 22.04`
-2. `Docker` and `Docker Compose` must be pre-installed.
+1. Recommended server operating system: `Ubuntu 22.04`
+2. `Docker` and `Docker Compose` must be installed on the server.
 
-## 2. Create Deployment Directory
+## 2. Create the Deployment Directory
 
 ```bash
 mkdir -p /opt/adnc/src
 ```
 
-## 3. Create Custom Docker Network
+## 3. Create a Custom Docker Network
 
 ```bash
 docker network create \
@@ -24,11 +24,11 @@ docker network create \
   adnc_network_main
 ```
 
-## 4. Upload Middleware Deployment Files
+## 4. Upload the Middleware Deployment YAML Files
 
-Upload the `adnc\doc\devops-staging` folder from your local machine to the `/opt/adnc` directory on the server.
+Upload the local `adnc\doc\devops-staging` folder to `/opt/adnc` on the server.
 
-The server directory structure should look like this:
+After upload, the server directory structure should be:
 
 ```bash
 opt
@@ -44,33 +44,33 @@ cd /opt/adnc/devops-staging
 docker compose up -d
 ```
 
-The `docker-compose.yml` file performs the following:
+The `docker-compose.yml` file performs the following tasks:
 
-- Deploys a `Consul` cluster and initializes configuration.
+- Deploys the `Consul` cluster and initializes configuration.
 - Deploys `MariaDB` and initializes the database.
 - Deploys `Redis`.
 - Deploys `RabbitMQ`.
 - Deploys `Grafana` and `Loki`.
 - Deploys `Nginx`.
 
-Check container status after deployment:
+After deployment, check container status with:
 
 ```bash
 docker container ls
 ```
 
-## 6. Install .NET 8 SDK
+## 6. Install the .NET 8 SDK
 
 ```bash
 apt-get update && \
 apt-get install -y dotnet-sdk-8.0
 ```
 
-## 7. Upload Microservices Code
+## 7. Upload Microservice Code
 
 > Before uploading, run `Delete-BIN-OBJ-Folders.bat` locally to clean all `bin` and `obj` directories.
 
-Upload the following folders and files to the `/opt/adnc/src` directory on the server:
+Upload the following folders and files to `/opt/adnc/src` on the server:
 
 - `Demo` directory
 - `Gateways` directory
@@ -79,7 +79,7 @@ Upload the following folders and files to the `/opt/adnc/src` directory on the s
 - `deploy_demo.sh`
 - `deploy_ocelot.sh`
 
-The server directory structure should look like this:
+After upload, the server directory structure should be:
 
 ```bash
 adnc
@@ -93,7 +93,7 @@ adnc
 └── devops-staging
 ```
 
-## 8. Execute Deployment Scripts
+## 8. Run Microservice Deployment Scripts
 
 ```bash
 cd /opt/adnc/src
@@ -102,22 +102,20 @@ bash deploy_demo.sh
 bash deploy_ocelot.sh
 ```
 
-## 9. Verify Gateway and Microservices
+## 9. Verify the Gateway and Microservices
 
-- Visit `http://{SERVER_IP}:8590` to open the Consul UI and check if `admin`, `maint`, and `cust` services are registered successfully.
-- Visit `http://{SERVER_IP}:5000` to verify if the gateway is working.
+- Visit `http://{server-ip}:8590`, open the Consul UI, and check whether the `admin`, `maint`, and `cust` services are registered successfully.
+- Visit `http://{server-ip}:5000` to check whether the gateway is working properly.
 
-## 10. Deploy Frontend
+## 10. Deploy the Front End
 
 ```bash
 pnpm run build
 ```
 
-- After a successful `build`, upload the files from the `dist` directory to `/opt/adnc/devops-staging/adnc-nginx/html`.
-- Access `http://{SERVER_IP}` and log in to verify the system deployment.
-
-------
+- After `build` succeeds, upload the files in the `dist` directory to `/opt/adnc/devops-staging/adnc-nginx/html`.
+- Visit `http://{server-ip}` and log in to check whether the system was deployed successfully.
 
 ## 11. Conclusion
 
-The `ADNC` deployment is now complete.
+At this point, `ADNC` has been deployed.

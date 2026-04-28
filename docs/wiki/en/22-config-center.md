@@ -1,33 +1,46 @@
-# ADNC Configuration Center: Consul
+# How to Use the Configuration Center (Consul) in ADNC
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-ADNC supports two modes for loading configurations:
+This project supports two configuration loading methods:
 
-- **File**: Reads from local `appsettings` files (default for local development).
-- **Consul**: Reads from Consul Key-Value (KV) store (recommended for Staging/Production).
+- `File`: Reads configuration from local `appsettings` files, suitable for local development.
+- `Consul`: Reads configuration from Consul KV, suitable for unified management and dynamic delivery in test, staging, and production environments.
+
+> Note: The `Nacos/Etcd` branch has been reserved in the code but is not currently implemented. See `src/ServiceShared/WebApi/Extensions/WebApplicationBuilderExtension.cs`.
 
 ---
 
 ## 0. Quick Start
 
-1. Start Consul.
-2. Add configurations to Consul KV (typically a shared config and a service-specific config).
-3. Set `ConfigurationType` to `Consul` in your service's `appsettings.json`.
-4. Configure `ConsulUrl` and `ConsulKeyPath`.
-5. Start the service. Configurations are refreshed automatically (polling).
+1. Start Consul, or use an existing Consul environment.
+2. Write configuration to Consul KV. This usually includes two entries: shared configuration and service-specific configuration.
+3. Switch the service `ConfigurationType` to `Consul`, and configure `ConsulUrl` and `ConsulKeyPath`.
+4. Start the service and confirm that configuration has taken effect. After modifying KV values, wait a few seconds to check whether they take effect automatically; this project uses polling refresh by default.
 
 ## 1. Configuration Loading Process
 
-When a service starts, it calls `AddConfiguration`:
+When each service starts, it calls `AddConfiguration` (`src/ServiceShared/WebApi/Extensions/WebApplicationBuilderExtension.cs`). The core logic is:
 
-- **File Mode**: Loads `appsettings.shared.{Environment}.json` from the execution directory.
-- **Consul Mode**: Connects to `ConsulUrl` and loads the keys specified in `ConsulKeyPath`.
-- **Placeholder Replacement**: After loading, the system automatically replaces placeholders like `$SERVICENAME`, `$SHORTNAME`, and `$RELATIVEROOTPATH`.
+- Read `ConfigurationType`.
+- If `ConfigurationType = File`, load `appsettings.shared.{Environment}.json` from the runtime directory (`AppContext.BaseDirectory`).
+- If `ConfigurationType = Consul`, read `ConsulUrl` and `ConsulKeyPath` from the `Consul` node and load the corresponding KV values.
+- After loading completes, automatically replace placeholders in configuration.
+- When the configuration source changes and reload is triggered, placeholder replacement is performed again.
 
-## 2. Switching to Consul
+Supported placeholders:
 
-Example configuration for a Staging environment:
+- `$SERVICENAME`
+- `$SHORTNAME`
+- `$RELATIVEROOTPATH`
+
+## 2. Switch to the Configuration Center (Consul)
+
+Taking the Demo Cust service as an example, `appsettings.*.json` in test, staging, and production environments has been configured to use `Consul`:
+
+- `src/Demo/Cust/Api/appsettings.Staging.json`
+
+Configuration excerpt:
 
 ```json
 {
@@ -39,30 +52,60 @@ Example configuration for a Staging environment:
 }
 ```
 
-- **ConsulUrl**: The HTTP API address of your Consul instance.
-- **ConsulKeyPath**: Comma-separated paths to KV keys. They are loaded in order.
-- **$SHORTNAME**: Automatically replaced with the service's short name (e.g., `cust-api`).
+Notes:
 
-## 3. Organizing KV Keys (Shared + Specific)
+- `ConsulUrl`: Consul HTTP API address.
+- `ConsulKeyPath`: Consul KV key path. Multiple keys can be separated by commas and are loaded in order.
+- `$SHORTNAME`: Automatically replaced by the current service short name at startup, such as `cust-api` or `admin-api`.
 
-We recommend a two-layer configuration strategy:
+## 3. Organize KV Keys (Shared + Service-Specific)
 
-1. **Shared Config** (`adnc/{env}/shared/appsettings`): Contains common settings like Redis, RabbitMQ, Polly, and SkyWalking.
-2. **Service-Specific Config** (`adnc/{env}/{shortName}/appsettings`): Overrides or adds settings specific to that service (e.g., DB connection strings).
+This project recommends loading shared configuration first and service-specific configuration second:
 
-The KV values should be **valid JSON strings**.
+- Shared: `adnc/{env}/shared/appsettings`
+- Service-specific: `adnc/{env}/{shortName}/appsettings`
 
-## 4. Dynamic Updates (Hot Reload)
+Load both configurations through `ConsulKeyPath`:
 
-When using Consul, ADNC enables `reloadOnChanges=true`. The Consul provider polls the KV store every 3 seconds. If the `LastIndex` changes, the configuration is reloaded and placeholders are re-processed.
+```text
+adnc/staging/shared/appsettings,adnc/staging/$SHORTNAME/appsettings
+```
 
-Note: While configurations reload, some components that cache settings on startup may still require a restart to reflect changes.
+Loading order matters:
 
-## 5. Initializing Consul KV
+- Put `shared` first to provide common configuration for each service, such as Redis, RabbitMQ, RpcInfo, and SkyWalking.
+- Put service-specific configuration last to override only the values that differ by service, such as database connection strings and ports.
 
-The repository includes scripts to initialize a Demo environment:
-- **Scripts**: `doc/devops-staging/adnc-consul/consul-init.sh`
-- **Initial Data**: `doc/devops-staging/adnc-consul/kv.json`
+The KV value content is JSON text, consistent with `appsettings.json`. The Consul provider parses the KV value as a JSON configuration file (`src/Infrastructures/Consul/Configuration/DefaultConsulConfigurationProvider.cs`).
 
----
-*If this helps, please Star & Fork.*
+## 4. Do Configuration Changes Take Effect Automatically?
+
+Yes.
+
+When using the Consul configuration source, loading configuration enables `reloadOnChanges=true`. The Consul provider polls KV every 3 seconds, compares `LastIndex`, triggers configuration reload (`OnReload()`) when changes are found, and performs placeholder replacement again.
+
+Notes:
+
+- Automatic reload only affects the configuration read path. If a component reads and caches configuration at startup, it may still need a restart to take full effect, depending on that component's implementation.
+- Configuration items that require hot update should be designed with Options/Monitor patterns or another dynamically readable mechanism. Sensitive changes, such as connection strings or certificates, are recommended to take effect through staged rollout and restart.
+
+## 5. Initialize Consul KV with devops-staging
+
+This repository provides Consul deployment and KV initialization scripts for the staging environment:
+
+- Consul Compose: `doc/devops-staging/adnc-consul/docker-compose.yml`
+- KV initialization script: `doc/devops-staging/adnc-consul/consul-init.sh`
+- Initial KV data: `doc/devops-staging/adnc-consul/kv.json`
+
+After the script starts, it runs `consul kv import ... @/consul/kv.json` to import the initial KV values.
+
+Notes:
+
+- The `value` field in `kv.json` is base64 encoded, as required by Consul's import format. After import, Consul stores the decoded JSON content.
+- The Compose file exposes the Consul UI on host port `8590` by default (`doc/devops-staging/adnc-consul/docker-compose.yml`).
+
+## 6. FAQ
+
+- Startup reports that Consul configuration cannot be found: Check whether `ConfigurationType` is `Consul`; check whether `ConsulUrl` is accessible; check whether `ConsulKeyPath` has a corresponding key.
+- Configuration changes do not take effect: Confirm that the correct key was modified; wait 3 to 5 seconds; check the service logs; confirm whether the configuration item requires restart to take effect.
+- Shared and service-specific configuration conflict: Confirm the loading order, where service-specific configuration should come last. Try to override only necessary items in service-specific configuration instead of redefining many nodes.

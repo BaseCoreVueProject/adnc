@@ -1,70 +1,94 @@
-# ADNC Inter-service Communication: HTTP (Refit)
+# How to Call ADNC Services Through HTTP (Refit)
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-In ADNC, synchronous inter-service calls (e.g., Service A calling Service B) typically use HTTP (via Refit) or gRPC. This guide uses `RestClientDemoController.cs` as an example to explain how the Cust service calls the Admin service, covering interface definition, client registration, address configuration, authentication, and fault tolerance.
+In ADNC, synchronous calls between services, such as service A calling an interface of service B, usually use HTTP with Refit or gRPC. This article uses `src/Demo/Cust/Api/Controllers/RestClientDemoController.cs` as an example to explain how the Cust service calls the Admin service over HTTP, covering interface definition, client registration, address configuration, authentication, and fault-tolerance policies.
 
 ---
 
-## 0. Quick Start (3 Steps)
+## 0. Quick Start
 
-1. **Define the Refit Interface**: Place it in a shared project (e.g., `src/Demo/Shared/Remote.Http/Services/IAdminRestClient.cs`).
-2. **Register the Client**: In the caller's `DependencyRegistrar.cs`, call `AddRestClient<IAdminRestClient>(...)`.
-3. **Inject and Call**: Inject `IAdminRestClient` into your Controller or Service via constructor and call the methods.
+1. Define the Refit interface in the shared project, for example `src/Demo/Shared/Remote.Http/Services/IAdminRestClient.cs`.
+2. Register the client in the caller service with `AddRestClient<IAdminRestClient>(...)`, for example in `src/Demo/Cust/Api/DependencyRegistrar.cs`.
+3. Inject and call the client in business code, such as by injecting `IAdminRestClient` through a controller or service constructor.
 
-## 1. Design Recommendations
+## 1. Design Suggestions
 
-- **Use for Queries/Validations**: Synchronous calls increase latency and failure points. For cross-service consistency, prefer Event-driven patterns (e.g., CAP).
-- **Depend on Interfaces + DTOs**: Do not reference the target service's API project directly or share entity models across services.
-- **Offload Common Concerns**: Let the framework handle authentication, retries, timeouts, and circuit breaking.
+- Use HTTP calls mainly for read operations such as queries and validation. The longer a synchronous cross-service call chain is, the easier it is to amplify latency and failures.
+- For cross-service consistency, prefer event-driven collaboration such as CAP.
+- Depend only on interfaces and DTOs. Do not directly reference another service's API project, and do not share entity models across services.
+- Let the framework handle common concerns such as authentication, retry, timeout, and circuit breaking. Business code should focus on what to call and how to use the result.
 
-## 2. Shared Components
+## 2. Related Directories and Components
 
-HTTP call-related code is typically organized in:
-```
+Taking the Demo project as an example, HTTP call-related code is usually distributed as follows:
+
+```text
 src/Demo/Shared/Remote.Http/
-├── Messages/                  # Request/Response DTOs (Shared)
-└── Services/                  # Refit Client Interfaces (Shared)
+├── Messages/                  # Request/response DTOs shared across services
+└── Services/                  # Refit client interfaces shared across services
 ```
 
-## 3. Defining the Refit Client Interface
+## 3. Define the Service Call Interface (Refit Client)
 
-The client interface must inherit from `IRestClient` (a marker interface):
+### 3.1 Interface Constraints
 
-```csharp
-[Headers("Authorization: Basic")] // Specify authentication scheme
-public interface IAdminRestClient : IRestClient
-{
-    [Get("/api/admin/dicts/options")]
-    Task<ApiResponse<List<DictRto>>> GetDictOptionsAsync();
+The HTTP client interface between services needs to inherit `IRestClient`, which is a marker interface used to constrain the generic scope of `AddRestClient<T>`.
+
+- `src/ServiceShared/Remote/Http/IRestClient.cs`
+
+### 3.2 Example: `IAdminRestClient`
+
+Taking `src/Demo/Shared/Remote.Http/Services/IAdminRestClient.cs` as an example:
+
+- Use Refit attributes to describe the request shape, such as `[Get("/api/admin/dicts/options")]`.
+- Use `[Headers("Authorization: Basic")]` to specify the authentication scheme. You only need to write the scheme (`Basic` or `Bearer`); the framework completes the token automatically.
+
+In simple terms:
+
+- `Authorization` supports the `Basic` and `Bearer` schemes.
+- `Basic` is more suitable for inter-service calls where user permissions do not need to be passed through the entire chain.
+- `Bearer` is more suitable when the downstream call should inherit the current user identity; the user's Bearer token is passed through to the downstream service.
+
+## 4. Authentication and Token Generation
+
+### 4.1 Outbound Token Injection
+
+`AddRestClient` mounts `TokenDelegatingHandler` (`src/ServiceShared/Remote/Handlers/TokenDelegatingHandler.cs`) by default. When the Refit interface declares an `Authorization` header such as `Basic` or `Bearer`, the handler generates the token according to the scheme and writes back `Authorization: {scheme} {token}`.
+
+### 4.2 Basic and Bearer Generation Logic
+
+- Basic: `src/ServiceShared/Remote/Handlers/Token/BasicTokenGenerator.cs` generates a short-lived token (`BasicTokenValidator.PackToBase64`) based on `BasicOptions` (username/password). The current `UserContext.Id` is also written into the token to identify the caller.
+- Bearer: `src/ServiceShared/Remote/Handlers/Token/BearerTokenGenerator.cs` directly intercepts and forwards the Bearer token from the current inbound request's `Authorization` header, meaning the downstream service is called with the current user's identity.
+
+### 4.3 Basic Configuration
+
+The Basic authentication configuration is located in `appsettings.shared.{Environment}.json`. A typical configuration is:
+
+```json
+"Basic": {
+  "UserName": "adnc",
+  "Password": "your-strong-secret"
 }
 ```
 
-- **Basic**: Best for internal service-to-service calls where user identity propagation is not required.
-- **Bearer**: Best for scenarios where the current user's identity (token) needs to be passed downstream.
+## 5. Register the HTTP Client (`AddRestClient`)
 
-## 4. Authentication and Token Injection
+Register the Refit client in application-layer dependency registration through `AddRestClient<T>`. Taking `src/Demo/Cust/Api/DependencyRegistrar.cs` as an example:
 
-The `AddRestClient` method automatically attaches a `TokenDelegatingHandler`:
+- Generate the default Polly policy with `GenerateDefaultRefitPolicies()` (`src/ServiceShared/Application/Extensions/DependencyRegistrarExtension.cs`).
+- Register the client with `AddRestClient<IAdminRestClient>(ServiceAddressConsts.AdminDemoService, restPolicies)`.
 
-1. **Outbound Requests**: When a Refit interface has an `Authorization` header, the handler generates the appropriate token based on the scheme.
-2. **Basic Logic**: Generates a short-lived token based on `BasicOptions` (username/password) and includes the current `UserContext.Id` to identify the caller.
-3. **Bearer Logic**: Extracts and forwards the Bearer token from the current incoming request.
+`ServiceAddressConsts` (`src/Demo/Shared/Remote.Http/ServiceAddressConsts.cs`) defines service-name constants that match the `RpcInfo:Address` node in configuration.
 
-## 5. Registering the HTTP Client
+## 6. Service Discovery and Address Configuration (`RegisterType` + `RpcInfo`)
 
-Register the client in the application layer. Example from `Cust` service:
+`AddRestClient` reads:
 
-```csharp
-var restPolicies = GenerateDefaultRefitPolicies();
-AddRestClient<IAdminRestClient>(ServiceAddressConsts.AdminDemoService, restPolicies);
-```
+- `RegisterType`: Decides whether to use direct addresses, CoreDNS addresses, or Consul addresses.
+- `RpcInfo`: Contains the `Polly` switch and the address list for each service.
 
-## 6. Service Discovery and Address Configuration
-
-The client resolution depends on:
-- `RegisterType`: Determines whether to use direct URLs, CoreDNS, or Consul.
-- `RpcInfo`: Contains the Polly toggle and address lists.
+Configuration example:
 
 ```json
 "RegisterType": "Direct",
@@ -74,18 +98,43 @@ The client resolution depends on:
     {
       "Service": "adnc-demo-admin-api",
       "Direct": "http://localhost:50010",
-      "Consul": "http://adnc-demo-admin-api"
+      "Consul": "http://adnc-demo-admin-api",
+      "CoreDns": "http://adnc-demo-admin-api.default.svc.cluster.local"
     }
   ]
 }
 ```
 
-## 7. Fault Tolerance (Polly)
+Notes:
 
-Default policies are provided by `GenerateDefaultRefitPolicies()`:
-- **Retry**: Retries on timeouts or 5xx errors with an interval.
-- **Timeout**: Sets a maximum duration for each call.
-- **Circuit Breaker**: Pauses calls if the failure threshold is reached to prevent cascading failures.
+- `Direct`: Most commonly used for local development. Fill in the URL directly.
+- `Consul`: Service registration/discovery mode. Configure the service name as the address; `ConsulDiscoverDelegatingHandler` performs instance discovery and routing.
+- `CoreDns`: Commonly used in Kubernetes scenarios, accessed through the in-cluster domain name.
 
----
-*If this helps, please Star & Fork.*
+## 7. Calling Example (Controller/AppService)
+
+Taking `src/Demo/Cust/Api/Controllers/RestClientDemoController.cs` as an example, the controller injects `IAdminRestClient` through the constructor and initiates calls:
+
+- `GetDictOptionsAsync`: Calls the Admin service to obtain dictionary options.
+- `GetSysConfigListAsync`: Calls the Admin service to obtain the system configuration list.
+
+Suggestion:
+
+- The API layer can initiate calls, but it is recommended to place cross-service calls in the service layer (`Application`) so exception handling and retry rules can be managed consistently.
+- Convert downstream exceptions such as timeouts, 5xx responses, and circuit-breaker failures into unified business error output instead of exposing downstream details directly to the front end.
+
+## 8. Fault-Tolerance Policy (Polly)
+
+The default policy is provided by `GenerateDefaultRefitPolicies()` and includes:
+
+- Retry: Retry with a wait interval when a timeout or 5xx response occurs.
+- Timeout: Set the maximum duration of each call.
+- Circuit breaker: Pause calls for a period after consecutive failures reach the threshold to avoid spreading failures.
+
+You can disable the policy through `RpcInfo:Polly:Enable`, but disabling it in production is not recommended.
+
+## 9. FAQ
+
+- 401/authentication failed: Confirm that the Refit interface declares the correct `Authorization` scheme (`Basic` or `Bearer`); confirm that the `Basic` configuration is consistent; if Bearer passthrough is used, confirm that the inbound request carries a Bearer token.
+- Service address not found: Confirm that `ServiceAddressConsts.*` exactly matches `RpcInfo:Address[].Service`; confirm that the address field corresponding to the current `RegisterType` is configured.
+- Call chain is too long: Longer synchronous call chains are less stable. Consider event-driven decomposition or introduce aggregation/query services to reduce call depth.

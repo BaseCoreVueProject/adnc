@@ -1,60 +1,58 @@
-# ADNC API Layer Development Guide
+# ADNC API Layer Development Guidelines
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-The API layer is responsible for exposing HTTP interfaces, handling routing, protocol adaptation, authentication, authorization, parameter binding, input validation, and response encapsulation. The API layer should remain "thin," avoiding business rules and transaction logic, which should be delegated to the Service layer (`Application`).
-
----
+The API layer provides external HTTP interfaces and handles routing, protocol adaptation, authentication and permission checks, parameter binding, input validation, response wrapping, and error output. Keep the API layer thin: business rules and transaction logic should stay in the service layer (`Application`).
 
 ## 1. Design Principles
 
-- **Clear Responsibility**: The API layer only handles protocol adaptation and boundary control (routing, auth, parameters, responses).
-- **Contract-Based**: Use DTOs (`Application.Contracts`) for all input and output to avoid exposing internal entity models.
-- **Consistency**: Maintain a unified routing style, response structure, and error coding strategy for easier integration by frontend and third-party systems.
-- **Observability**: Interface logging, tracing, and auditing should be handled uniformly at the framework level rather than in business code.
+- Clear responsibilities: The API layer only handles protocol adaptation and boundary control, including routing, authentication, parameters, and responses. It should not directly implement business rules.
+- Contract-oriented: Inputs and outputs should use DTOs from `Application.Contracts`; do not expose entity models directly.
+- Consistency: Use consistent routing, response structures, error codes, and error messages to simplify front-end and third-party integration.
+- Observability: API logs, tracing, and audit information should be handled consistently at the framework layer instead of repeated in business code.
 
-## 2. Directory Structure (Example)
+## 2. Directory Structure Example
 
-```
+```text
 Api/
 ├── Controllers/              # Controllers
-├── Filters/                  # Custom Filters (Optional)
-├── Consts.cs                 # Constants/Permission Codes (Optional)
-├── DependencyRegistrar.cs    # Dependency Registration 
-├── MiddlewareRegistrar.cs    # Middleware Registration
-├── Program.cs                # Application Entry Point
-└── appsettings*.json         # Configuration Files
+├── Filters/                  # Filters, optional
+├── Consts.cs                 # Constants and permission codes, optional
+├── DependencyRegistrar.cs    # Dependency registration
+├── MiddlewareRegistrar.cs    # Middleware registration
+├── Program.cs                # Application entry point
+└── appsettings*.json         # Configuration files
 ```
 
-## 3. Routing and Controller Standards
+## 3. Routing and Controller Guidelines
 
-- **Naming**: Use resource names (e.g., `StudentController`) with pluralized routes (e.g., `/students`).
-- **Organization**: Use a unified routing root (e.g., `RouteConsts.Admin`) to avoid hardcoded strings.
-- **Base Class**: Inherit from the framework's base controller (e.g., `AdncControllerBase`) to leverage common result types and features.
+- Controller naming: Name controllers after resources, such as `StudentController`, and use plural resource routes such as `/students`.
+- Route organization: Prefer a unified route root, such as `RouteConsts.Admin`, to avoid scattered hard-coded routes.
+- Controller base class: Inherit the framework-provided controller base class, such as `AdncControllerBase`, to reuse common result handling and basic capabilities.
 
-## 4. Authentication and Authorization
+## 4. Authentication and Permission Control
 
-- **Default to Secure**: Require authentication for all endpoints by default; use explicit markers (e.g., `[AllowAnonymous]`) only when necessary.
-- **Principle of Least Privilege**: Assign permission codes to all write operations (Create/Update/Delete) and sensitive read operations. Centralize these codes in `PermissionConsts`.
-- **Explicit Schemes**: In environments with multiple auth schemes, explicitly specify which schemes are allowed for each endpoint.
+- Default authentication: Prefer global policies that require authentication for all interfaces by default. Anonymous endpoints should be explicitly marked, such as with `[AllowAnonymous]`.
+- Minimum permissions: Configure permission codes for write endpoints, such as create, update, and delete, and for sensitive read endpoints. Manage permission codes centrally, such as in `PermissionConsts`.
+- Authentication schemes: In scenarios that support multiple authentication schemes, clearly define which scheme combinations each endpoint allows to avoid unclear default behavior.
 
-## 5. Parameter Binding and Validation
+## 5. Parameter Binding and Input Validation
 
-- **Explicit Sources**: Use `[FromRoute]`, `[FromQuery]`, or `[FromBody]` to avoid ambiguity in parameter binding.
-- **Pre-validation**: Use FluentValidation for DTOs. These are triggered automatically by the framework; do not write manual if/else checks in the API layer.
-- **Semantic DTOs**: Separate DTOs for different operations (e.g., `CreationDto`, `UpdationDto`, `SearchPagedDto`) to avoid overloaded semantics.
+- Clear parameter sources: Mark `[FromRoute]`, `[FromQuery]`, and `[FromBody]` explicitly to avoid ambiguity from implicit binding.
+- Pre-validation: Use FluentValidation for DTO input validation. The framework triggers validators uniformly, so the API layer does not need repeated handwritten `if` / `else` checks.
+- Semantic DTOs: Separate creation, update, query, and paging DTOs, such as `CreationDto`, `UpdationDto`, and `SearchPagedDto`, so one DTO does not carry multiple meanings.
 
 ## 6. Response and Error Handling
 
-- **Unified Structure**: Return standard structures like `ServiceResult` or `Problem` to maintain a consistent API contract.
-- **HTTP Semantics**: Return `201 Created` for creations, `204 No Content` for successful updates/deletions, `404 Not Found` for missing resources, and `400 Bad Request` for validation failures.
-- **Exception Boundaries**: Business and system exceptions are converted to standard error responses via middleware. Do not "swallow" exceptions in the API layer.
+- Response structure: Prefer a unified result structure, such as `ServiceResult` / `Problem`, to avoid multiple return formats for the same kind of endpoint.
+- HTTP semantics: Return 201 for creation, 204 or a unified result for successful update/delete, 404 when a resource does not exist, and 400 for validation failures.
+- Exception boundary: Business and system exceptions are converted into standard error responses by unified exception-handling middleware. The API layer should not swallow exceptions directly.
 
-## 7. Documentation
+## 7. API Documentation and Examples
 
-- **OpenAPI/Swagger**: Add XML summaries and response code attributes to actions to ensure the generated documentation is readable and useful.
-- **Clear Examples**: Provide request examples for complex operations like paging, bulk updates, or imports/exports.
+- OpenAPI/Swagger: Add necessary summaries and response code annotations to controllers/actions so generated documentation remains readable.
+- Clear examples: Provide request examples and field descriptions for endpoints such as paging, batch operations, import, and export to lower the adoption cost.
 
 ## 8. Reference Implementation
 
-- Refer to the `Api/Controllers` in the Demo services and their corresponding `Application` implementations.
+For details, see `Api/Controllers` and the corresponding `Application` service implementations in each Demo service.

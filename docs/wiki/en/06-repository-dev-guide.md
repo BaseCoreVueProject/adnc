@@ -1,60 +1,60 @@
-# ADNC Repository Layer Development Guide
+# ADNC Repository Layer Development Guidelines
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-The Repository layer (located in the `Repository` project, or `Domain` + `Infrastructure` in DDD scenarios) is responsible for encapsulating data persistence and query capabilities. This includes entity modeling, mapping configurations, database contexts, repository implementations, and infrastructure features like read/write splitting, soft deletes, and concurrency control. The Repository layer should focus exclusively on "data access" and should not handle business orchestration or transaction boundaries (which should be controlled by the Service layer).
+The Repository layer, meaning the `Repository` project or `Domain` plus `Infrastructure` in DDD scenarios, encapsulates data persistence and query capabilities. This includes entity modeling, mapping configuration, database contexts, repository interface implementations, read/write splitting, soft deletion, concurrency control, and other foundational capabilities.
 
----
+The Repository layer should focus on data access. Business orchestration and transaction boundaries should usually be handled by the service layer.
 
 ## 1. Design Principles
 
-- **Focus on Data Access**: Repositories handle persistence and queries only; they do not process business rules or workflow orchestration.
-- **Abstractions Over Implementations**: Higher layers should depend on repository interfaces, facilitating easier testing and data source replacement.
-- **Composable Queries**: Provide composable query capabilities (filters, sorting, paging) instead of creating separate methods for every specific query scenario.
-- **Consistent Constraints**: Cross-cutting rules such as naming conventions, soft deletes, concurrency control, and audit fields should be implemented uniformly at the infrastructure level.
+- Focus on data access: Repository code is responsible only for persistence and querying, not business rules or process orchestration.
+- Depend on abstractions: Upper layers should depend on repository interfaces instead of concrete implementations, making testing and data-source replacement easier.
+- Composable queries: Prefer composable query capabilities such as filters, sorting, and paging, instead of adding a separate method for every query scenario.
+- Consistent constraints: Cross-cutting rules such as naming conventions, soft deletion, concurrency control, and audit fields should be implemented consistently in the infrastructure layer.
 
-## 2. Directory Structure (Example)
+## 2. Directory Structure Example
 
-```
+```text
 Repository/
 ├── Entities/                 # Entities
-│   └── Config/               # EF Core Mapping Config (Fluent API)
-├── Migrations/               # Migrations
-└── EntityInfo.cs             # Entity Registration/Scanning
+│   └── Config/               # EF Core mapping configuration (Fluent API)
+├── Migrations/               # Migrations, or in a separate Migrations project
+└── EntityInfo.cs             # Entity registration/scanning, if required by the framework
 ```
 
-## 3. Entity Modeling Standards
+## 3. Entity Modeling Guidelines
 
-- **Entity Responsibility**: Entities describe data structures and domain states; they do not manage application-level orchestration logic.
-- **Base Class Selection**: Choose appropriate base classes or interfaces based on requirements for audit fields, soft deletes, and concurrency control (e.g., Audit base classes, `ISoftDelete`, `IConcurrency`).
-- **Field Constraints**: Manage constraints like length, required status, and indexes primarily through Fluent API in entity configuration classes.
+- Entity responsibilities: An entity describes data structure and domain state. It should not directly take on application-layer orchestration.
+- Base class selection: Choose the proper entity base class or interface, such as audit base classes, `ISoftDelete`, or `IConcurrency`, based on audit fields, soft deletion, and concurrency requirements.
+- Field constraints: Length, required fields, indexes, and similar constraints should mainly be defined through the Fluent API and managed centrally in entity configuration classes.
 
 ## 4. Mapping Configuration (Fluent API)
 
-- **Unified Location**: Provide independent configuration classes for each entity in `Entities/Config` (e.g., `StudentConfig`).
-- **Explicit Constraints**: Explicitly configure lengths, precision, default values, indexes, and relationships (1:1/1:N/N:N) to avoid relying on implicit conventions.
-- **Shared Rules**: Common rules such as table/column naming conventions, soft delete filters, and concurrency columns should be handled centrally in base classes or the DbContext.
+- Unified location: Provide an independent configuration class, such as `StudentConfig`, for each entity under `Entities/Config`.
+- Explicit constraints: Explicitly configure length, precision, default values, indexes, and relationships such as 1:1, 1:N, and N:N. Avoid relying too much on implicit conventions.
+- Shared rules: Table names, column names, soft delete filters, concurrency columns, and similar rules should be handled consistently in base configuration or `DbContext`.
 
 ## 5. Migrations
 
-- **Migration Strategy**: Use unified naming and execution standards for migrations across development, testing, and production to avoid conflicts in collaborative environments.
-- **Environment Isolation**: Clearly define connection strings and execution strategies for different environments to prevent accidental application of migrations to the wrong database.
+- Migration strategy: Standardize migration naming and execution for development, testing, and production to avoid conflicts in team development.
+- Environment isolation: Keep connection strings and migration execution strategies clear across environments to avoid applying migrations to the wrong database.
 
-## 6. Repository Interface and Implementation
+## 6. Repository Interface and Implementation Suggestions
 
-- **Interface Segregation**: Basic repository interfaces provide standard CRUD and query capabilities. Specialized queries can be added via extension methods, Specifications, or Dapper/Raw SQL.
-- **Read/Write Splitting**: If enabled, the calling layer must specify if a query requires "strong consistency" (hitting the write database) to avoid data inconsistency from eventual consistency lag.
-- **Transaction Boundaries**: Repository methods should not initiate business transactions. Transaction boundaries for multiple write operations are managed by the Service layer (`Application`) using `IUnitOfWork` or transaction interceptors.
+- Interface separation: Basic repository interfaces provide common CRUD and query capabilities. Special queries can be added through extension methods, Specification, Dapper, or raw SQL.
+- Read/write splitting: If read/write splitting is enabled, upper layers must specify whether a query requires the write database for strongly consistent reads. Avoid hidden behavior that can cause data inconsistency.
+- Transaction boundaries: Repository methods should not actively start business transactions. Transaction boundaries for multiple write operations should be controlled by the service layer (`Application`), such as through `IUnitOfWork` or a transaction interceptor.
 
 ## 7. Performance and Consistency
 
-- **Paging**: Use stable sort fields for paged queries to prevent record "shuffling" between pages.
-- **N+1 Issues**: Use explicit `Include` or projections for navigation properties to avoid the performance penalties of implicit lazy loading.
-- **Concurrency Control**: Use concurrency tokens (RowVersion/concurrency fields) for critical writes and provide meaningful error responses on conflict.
-- **Soft Deletes**: Entities with soft deletes enabled should use global query filters and provide a "Include Deleted" bypass for administrative scenarios only.
+- Paging: Use stable sorting fields for paging queries to avoid inconsistent page results.
+- N+1: Use explicit `Include` or projection for navigation property loading. Avoid performance issues from implicit lazy loading.
+- Concurrency control: Use concurrency flags, such as row version or concurrency fields, for critical writes and return understandable errors for conflicts.
+- Soft deletion: Entities with soft deletion enabled should use global filters consistently and provide a necessary "include deleted" query channel only for management scenarios.
 
-## 8. Reference Implementations
+## 8. Reference Implementation
 
-- **Entity/Mapping/Migration Examples**: See `docs/wiki/feature-dev-guide.md`.
-- **EF Core Repository & Unit of Work**: See `docs/wiki/efcore-pemelo-curd.md` and `docs/wiki/efcore-pemolo-unitofwork.md`.
-- **Raw SQL Capabilities**: See `docs/wiki/efcore-pemelo-sql.md`.
+- Entity, mapping, and migration example: see `docs/wiki/feature-dev-guide-zh.md`.
+- EF Core repository and unit of work: see `docs/wiki/efcore-pemelo-curd-zh.md` and `docs/wiki/efcore-pemolo-unitofwork-zh.md`.
+- Raw SQL capability: see `docs/wiki/efcore-pemelo-sql-zh.md`.

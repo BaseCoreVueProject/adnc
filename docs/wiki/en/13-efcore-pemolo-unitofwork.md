@@ -1,68 +1,81 @@
-# ADNC Repository Usage: Transactions and Unit of Work
+# ADNC Repository Usage - transactions
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-This article introduces transaction management and the Unit of Work pattern in ADNC.
+This article mainly introduces transactions and work units.[EFCore Transactions](https://docs.microsoft.com/zh-cn/ef/core/saving/transactions)
 
-## EF Core Transactions
+is divided into the following three types:- SaveChanges
+- DbContextTransaction
+- TransactionScope
 
-EF Core supports three types of transactions:
-- `SaveChanges`
-- `DbContextTransaction`
-- `TransactionScope`
-
-By default, EF Core's `SaveChangesAsync` wraps operations in a transaction as needed. However, there are exceptions in ADNC:
-1. **Bulk Operations**: `ExecuteUpdateAsync` and `ExecuteDeleteAsync` bypass the change tracker and are not controlled by `SaveChanges`.
-2. **CAP Transactions**: CAP operations are outside the standard `SaveChanges` scope.
-3. **Raw SQL**: Native SQL execution is not managed by `SaveChanges`.
-
-## Unit of Work Implementation
-
-ADNC uses `DbContextTransaction` to unify transaction control. If your business logic involves multiple write operations (≥ 2), it is recommended to explicitly enable transaction control.
-
-### Using Interceptors (Declarative)
-
-The easiest way to use transactions is via the `[UnitOfWork]` attribute on service interfaces in the `Application.Contracts` layer.
+By default in EF Core, SaveChanges starts transactions as needed.1. Batch update/deletion of`ExecuteUpdateAsync`,`ExecuteDeleteAsync`, etc. does not go through the EF Core native change tracking process and is not controlled by the SaveChanges transaction.2. CAP transactions are not controlled by the SaveChanges transaction.3. The addition, deletion, modification and query of raw SQL are not controlled by the SaveChanges transaction.4. Implementation constraints related to read-write separation (please refer to "How to Implement Read-Write Separation").
 
 ```csharp
-// Local Transaction
-[UnitOfWork]
-Task<AppSrvResult> UpdateAsync(long id, DeptUpdationDto input);
-
-// Distributed Transaction (CAP)
-[UnitOfWork(Distributed = true)]
-Task<AppSrvResult> ProcessPayingAsync(long transactionLogId, long customerId, decimal amount);
-```
-
-The framework automatically manages the transaction lifecycle (Begin, Commit, Rollback) through an interceptor.
-
-### Manual Transaction Control
-
-If you prefer manual control or have complex requirements, you can inject `IUnitOfWork` into your service:
-
-```csharp
-public class xxxAppService
+public class AdncDbContext : DbContext
 {
-    private readonly IUnitOfWork _uow;
-    public xxxAppService(IUnitOfWork uow) => _uow = uow;
-
-    public async Task DemoMethod()
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            await _uow.BeginTransactionAsync(distributed: false);
-            // Operation 1
-            // Operation 2
-            await _uow.CommitAsync();
-        }
-        catch (Exception)
-        {
-            await _uow.RollbackAsync();
-            throw;
-        }
+        //efcore7 support this feature , default is WhenNeeded
+        //Database.AutoTransactionBehavior = AutoTransactionBehavior.WhenNeeded;
+        SetAuditFields();
+        var result = base.SaveChangesAsync(cancellationToken);
+        return result;
     }
 }
 ```
 
+`ADNC`centrally controls transactions through`DbContextTransaction`. If the business logic requires multiple addition/deletion/modification operations (for example, ≥ 2 times), it is recommended to explicitly enable transaction control (for example, through interceptors/property declarations).> Master-slave table insertion, master-slave table update, batch addition, batch modification, and batch deletion operations can all be implemented through an add/delete/modify method, and there is no need to explicitly start a transaction.`Adnc.Infra.Repository.EfCore.MySql`implements the`IUnitOfWork`interface of`Adnc.Infra.Repository`. We only need to explicitly declare the interceptor attribute or inject it from the constructor.
+
+## How to use
+## Register interceptor`services.AddAppliactionSerivcesWithInterceptors()`This extension method is well implemented. Please refer to the source code for specific implementation.
+
+### Explicitly declare interceptors
+The unified declaration of the service interface in the`Adnc.Xxx.Application.Contracts`layer is also declared on the interface.
+
+```csharp
+// Local transaction.
+[UnitOfWork]
+Task<AppSrvResult> UpdateAsync(long id, DeptUpdationDto input);
+
+// CAP transaction/distributed transaction.
+[UnitOfWork(Distributed =true)]
+Task<AppSrvResult> ProcessPayingAsync(long transactionLogId, long customerId, decimal amount);
+```
 ---
-*If this helps, please Star & Fork.*
+## Free call to start transaction
+If you don't like the interceptor to handle transactions or the interceptor to handle transactions cannot meet your needs, you can also enable it freely.
+
+```csharp
+public class xxxAppService
+{
+    private IUnitOfWork _uow;
+    public xxxAppService(IUnitOfWork uow) _uow=>uow;
+    public DemoMethod()
+    {
+        try
+        {
+            _uow.BeginTransaction(distributed:false);
+            // Operation 1
+            // Operation 2
+            // Operation 3
+            // Operation N
+            _unitOfWork.Commit();
+        }
+        catch (Exception ex)
+        {
+            _unitOfWork.Rollback();
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }  
+    }
+}
+
+```
+-
+
+----
+
+-
+-- over --If you can help, please feel free to Star & Fork.

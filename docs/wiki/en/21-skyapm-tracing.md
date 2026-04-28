@@ -1,24 +1,28 @@
-# ADNC Observability: Enabling SkyAPM (SkyWalking)
+# How to Enable SkyAPM (SkyWalking) Tracing in ADNC
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-ADNC integrates **SkyAPM (SkyWalking .NET Agent)** for distributed tracing. Once enabled, you can visualize request traces, service dependencies, and operation latencies (HTTP, gRPC, CAP, Redis) in the SkyWalking UI.
+This project has integrated SkyAPM (SkyWalking .NET Agent) dependencies. After enabling it, you can view request traces, service dependencies, endpoint latency, and related information in the SkyWalking UI. HTTP, gRPC, CAP publishing/consumption, Redis cache operations, and other spans can be connected to help troubleshoot issues.
 
 ---
 
 ## 0. Prerequisites
 
-- A running **SkyWalking OAP** backend.
-- Ensure the `SkyWalking:Transport:gRPC:Servers` configuration points to your OAP address (e.g., `127.0.0.1:11800`).
+- SkyWalking OAP (backend) is deployed. This project reports data through gRPC, so `SkyWalking:Transport:gRPC:Servers` must point to an accessible OAP address. The default example is `127.0.0.1:11800`.
+- The service to be traced has started and can read the `SkyWalking` configuration section.
 
-## 1. Quick Enablement
+## 1. Quick Start
 
-1. **Configure OAP Address**: Update `SkyWalking:Transport:gRPC:Servers`.
-2. **Enable the Agent**: Set the environment variable `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=SkyAPM.Agent.AspNetCore` and restart your services.
+1. Configure the SkyWalking OAP address by modifying `SkyWalking:Transport:gRPC:Servers`.
+2. Enable the agent by setting `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=SkyAPM.Agent.AspNetCore` and restarting the service.
 
-## 2. Configuration Settings
+## 2. Configuration Location
 
-Shared settings are found in `appsettings.shared.Development.json`:
+The shared Demo service configuration is:
+
+- `src/Demo/Shared/resources/appsettings.shared.Development.json`
+
+The `SkyWalking` node is included as an excerpt:
 
 ```json
 "SkyWalking": {
@@ -32,33 +36,49 @@ Shared settings are found in `appsettings.shared.Development.json`:
 }
 ```
 
-- **Namespace**: Used to distinguish environments or projects.
-- **Sampling**: Controls the trace sampling rate. Use full sampling for development.
+Notes:
 
-## 3. Enabling in Local Development (Visual Studio)
+- `Namespace`: Distinguishes environments or projects. Optional.
+- `Sampling`: Sampling strategy. Full sampling is common during development; in production, enable sampling and configure `IgnorePaths` as needed.
 
-In the `launchSettings.json` of your API project, uncomment the following line:
+## 3. Enable Local Debugging (Visual Studio)
+
+Each Demo service has reserved switches in `launchSettings.json`. Taking Cust as an example:
+
+- `src/Demo/Cust/Api/Properties/launchSettings.json`
+
+Uncomment the following configuration:
 
 ```json
 "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "SkyAPM.Agent.AspNetCore"
 ```
 
-## 4. Enabling in Docker/Server Deployment
+## 4. Enable Container/Server Deployment (Docker)
 
-Add the following environment variables to your container:
+The deployment scripts include examples as comments, for example:
 
-- `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=SkyAPM.Agent.AspNetCore`
-- `SKYWALKING__SERVICENAME=your-service-name`
+- `src/deploy_demo.sh`
 
-## 5. Extended Tracing (CAP & Redis)
+The core step is to add two environment variables to the container:
 
-ADNC provides extensions to trace CAP events and Redis operations. These spans will automatically appear in your trace timelines when enabled.
+- `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=SkyAPM.Agent.AspNetCore`: enables the agent.
+- `SKYWALKING__SERVICENAME=xxx`: overrides `SkyWalking:ServiceName`.
 
-## 6. Troubleshooting
+## 5. CAP and Redis Trace Supplement (Optional)
 
-- **Verification**: Check if the `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES` variable is correctly set in the running process.
-- **Connectivity**: Verify that the service can reach the SkyWalking OAP gRPC port.
-- **Logs**: Check the SkyAPM agent logs, typically located at `txtlogs/skyapm-{Date}.log`.
+This project has mounted SkyAPM extensions for CAP and Redis cache. The related extensions are registered automatically:
 
----
-*If this helps, please Star & Fork.*
+- CAP: `src/Infrastructures/EventBus/Extensions/ServiceCollectionExtension.cs`
+- Redis cache: `src/Infrastructures/Redis.Caching/Extensions/ServiceCollectionExtension.cs`
+
+In the UI, you will usually see:
+
+- HTTP/gRPC calls.
+- CAP publishing/consumption traces, making the same business process easier to follow.
+- Redis cache spans if the call path involves caching.
+
+## 6. Verify That Tracing Works
+
+- Whether the service actually has the agent enabled: Confirm that the runtime environment variable `ASPNETCORE_HOSTINGSTARTUPASSEMBLIES` contains `SkyAPM.Agent.AspNetCore`.
+- Whether the OAP address is reachable: Confirm that `SkyWalking:Transport:gRPC:Servers` points to an accessible address and port.
+- Logs: Check the log file specified by `SkyWalking:Logging:FilePath`, which defaults to `txtlogs\\skyapm-{Date}.log`.

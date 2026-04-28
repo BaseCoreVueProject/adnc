@@ -1,65 +1,70 @@
-# ADNC Repository Usage: Executing Raw SQL
+# ADNC Repository Usage - execute raw SQL
 
-[GitHub Repository](https://github.com/alphayu/adnc)
+[GitHub repository](https://github.com/alphayu/adnc)
 
-This article describes how to execute raw SQL in the ADNC repository layer. In scenarios involving complex queries, multi-table joins, or high-volume writes, raw SQL is often more efficient than EF Core.
+This article mainly introduces how to execute raw SQL in the`ADNC` repository. When encountering scenarios such as complex queries, multi-table queries, and large-volume write operations, reluctantly using EF Core implementation is not the best solution. For example,`SqlSugar`and`FreeSql`also provide the ability to directly operate ADO to execute SQL; therefore, in a production environment, the appropriate use of raw SQL is often inevitable.
 
-## Executing SQL via EF Core Repository
-
-The `IEfRepository<TEntity>` interface provides a way to access Dapper for queries and EF's native methods for writes.
+## execute raw SQL in the EF Core repository
+The following takes the EF Core repository interface as an example to illustrate one attribute and two methods related to SQL:
 
 ```csharp
 public interface IEfRepository<TEntity> : IEfBaseRepository<TEntity>
+where TEntity : EfEntity
 {
     /// <summary>
-    /// For Raw SQL Queries (via Dapper)
+    /// Executes a raw SQL query.
     /// </summary>
     IAdoQuerierRepository? AdoQuerier { get; }
 
     /// <summary>
-    /// For Raw SQL Write Operations (via EF Interpolated)
+    /// Executes a raw SQL write operation.
     /// </summary>
-    Task<int> ExecuteSqlInterpolatedAsync(FormattableString sql, ...);
+    Task<int> ExecuteSqlInterpolatedAsync(FormattableString sql, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// For Raw SQL Write Operations (via EF Raw)
+    /// Executes a raw SQL write operation.
     /// </summary>
-    Task<int> ExecuteSqlRawAsync(string sql, ...);
+    Task<int> ExecuteSqlRawAsync(string sql, CancellationToken cancellationToken = default);
 }
 ```
+The implementation instructions are as follows:
+- `AdoQuerier`The implementation class injects the`IAdoQuerierRepository`interface through the constructor and assigns it to the object after setting up the database connection. The implementation of this interface in ADNC is located in`DapperRepository`of the`Adnc.Infra.Repository.Dapper`project. The definition of`IAdoQuerierRepository`almost covers Dapper's common query methods, so Dapper's query capabilities can be called through`AdoQuerier`in the EF Core repository.
+- `ExecuteSqlInterpolatedAsync`Directly call the EF native method`DbContext.Database.ExecuteSqlInterpolatedAsync()`to execute SQL (write operation). This method can reduce the risk of SQL injection and is recommended to be used first.
+- `ExecuteSqlRawAsync`Directly call the EF native method`DbContext.Database.ExecuteSqlRawAsync()`to execute SQL (write operation).
 
-### Usage Examples
+The sample code is as follows:
 
-- **Querying with Dapper via EF Repository**:
-  The `AdoQuerier` property provides access to Dapper's query methods.
-  ```csharp
-  var sql = "SELECT * FROM Customer WHERE Id = @Id";
-  var customer = await _repo.AdoQuerier.QueryFirstAsync<Customer>(sql, new { Id = 1 });
-  ```
+```csharp
+var sql2 = @"SELECT * FROM Customer ORDER BY Id ASC";
+var dbCustomer = await _customerRsp.AdoQuerier.QueryFirstAsync<Customer>(sql2, null, _customerRsp.CurrentDbTransaction);
 
-- **Writing with Interpolated SQL**:
-  This method reduces the risk of SQL injection and is the recommended way to perform raw updates.
-  ```csharp
-  var id = 10001;
-  var name = "NewNickName";
-  await _repo.ExecuteSqlInterpolatedAsync($"UPDATE Customer SET Nickname={name} WHERE Id={id}");
-  ```
+var rawSql1 = "update Customer set nickname='test8888' where id=1000000000";
+var rows = await _customerRsp.ExecuteSqlRawAsync(rawSql1);
 
-## Direct Use of Dapper Repository
-
-While prioritized through `AdoQuerier`, you can also inject `IAdoExecuterWithQuerierRepository` directly if needed for extreme flexibility across different database types.
+var id=10000000;
+var newNickName = "test8888";
+FormattableString formatSql2 = $"update Customer set nickname={newNickName} where id={id}";
+rows = await _customerRsp.ExecuteSqlInterpolatedAsync(formatSql2);
+```
+# Use Dapper repository directly
+> Unless absolutely necessary, it is not recommended to use Dapper repository directly. Prioritize unified access through`AdoQuerier`of the EF Core repository to reduce the coupling of the data access layer and keep the calling method consistent. The advantage of using the Dapper repository directly is the flexibility to operate on any database type it supports.
 
 ```csharp
 public class xxxAppService
 {
-    private readonly IAdoExecuterWithQuerierRepository _dapperRepo;
+    private IAdoExecuterWithQuerierRepository _dapperRepo;
     public xxxAppService(IAdoExecuterWithQuerierRepository dapperRepo)
     {
         _dapperRepo = dapperRepo;
-        _dapperRepo.ChangeOrSetDbConnection(connectionString, DbTypes.MYSQL);
+        _dapperRepo.ChangeOrSetDbConnection(connectingstring,DbTypes.MYSQL);
+    }
+
+    public Demomethod()
+    {
+        var sql="SELECT * FROM Customer Order by Id desc";
+        var result = await _dapperRepo.QueryAsync(sql);
     }
 }
 ```
 
----
-*If this helps, please Star & Fork.*
+-- over --If you can help, welcome[star & fork](https://github.com/alphayu/adnc).
