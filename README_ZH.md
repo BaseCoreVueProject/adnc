@@ -1,4 +1,4 @@
-# <div align="center"><img src="https://aspdotnetcore.net/assets/images/adnc-github.png" alt="ADNC-支持模块化单体平滑演进为分布式微服务的 .NET 8 开源框架" style="zoom:50%;" /></div>
+# <div align="center"><img src="./docs/assets/images/adnc-github.png" alt="ADNC-支持模块化单体平滑演进为分布式微服务的 .NET 8 开源框架" style="zoom:50%;" /></div>
 <div align='center'>
 <a href="./LICENSE">
 <img alt="GitHub license" src="https://img.shields.io/github/license/AlphaYu/Adnc"/>
@@ -117,25 +117,26 @@ adnc
 | `src/Infrastructures/Adnc.Infra.sln`| 该解决方案仅包含基础架构层相关工程 |
 | `src/ServiceShared/Adnc.Shared.sln` | 该解决方案仅包含服务通用层相关工程 |
 | `src/Demo/Adnc.Demo.sln`            | 该解决方案仅包含`demo`相关工程     |
+| `src/Gateways/Ocelot/Adnc.Ocelot.sln` | 该解决方案仅包含 Ocelot 网关工程 |
 | `src/.editorconfig`            | 用于统一代码风格的跨编辑器配置文件，确保团队中无论谁用 VS、VS Code 还是 JetBrains Rider，写出的代码格式都是一致的     |
 | `src/Directory.Build.props`             | 用于管理通用构建属性（如目标框架、语言版本、输出路径等）  |
 | `src/Directory.Packages.props`          | 用于中央包管理 (CPM)，统一管理整个解决方案中 NuGet 包的版本号  |
 
 ### 总体架构图
 
-<img src="https://aspdotnetcore.net/assets/images/adnc_framework-e1682145003197.png" alt="adnc_framework"/>
+<img src="./docs/assets/images/adnc_framework-e1682145003197.png" alt="adnc_framework"/>
 
 #### Adnc.Infra.*
 
 [NuGet Gallery | Packages matching adnc.infra](https://www.nuget.org/packages?q=adnc.infra)
 
-![adnc-framework-2](https://aspdotnetcore.net/assets/images/adnc-framework-2.png)
+![adnc-framework-2](./docs/assets/images/adnc-framework-2.png)
 
 #### Adnc.Shared.*
 
 [NuGet Gallery | Packages matching adnc.shared](https://www.nuget.org/packages?q=adnc.shared)
 
-<img src="https://aspdotnetcore.net/assets/images/adnc-framework-3.png" alt="adnc-framework-3" style="zoom:80%;" />
+<img src="./docs/assets/images/adnc-framework-3.png" alt="adnc-framework-3" style="zoom:80%;" />
 
 ### 技术栈
 
@@ -233,7 +234,7 @@ Ord/
 
 ##### :white_check_mark: Adnc.Demo.Whse
 
-> Whse 是仓储中心服务，整体结构与 Ord 一致，同样采用带独立领域层的 DDD 组织方式。
+> Whse 是仓库中心服务，整体结构与 Ord 一致，同样采用带独立领域层的 DDD 组织方式。
 
 ```
 Whse/
@@ -260,7 +261,7 @@ Whse/
 | 11       | [ADNC 如何使用仓储 - CodeFirst](https://docs.aspdotnetcore.net/wiki/zh-cn/11-efcore-pemelo-codefirst-zh) |
 | 12       | [ADNC 如何使用仓储 - 切换数据库类型](https://docs.aspdotnetcore.net/wiki/zh-cn/12-efcore-pemelo-sqlserver-zh) |
 | 13       | [ADNC 如何使用仓储 - 事务](https://docs.aspdotnetcore.net/wiki/zh-cn/13-efcore-pemolo-unitofwork-zh) |
-| 14       | [ADNC  如何使用仓储 - 执行原生SQL](https://docs.aspdotnetcore.net/wiki/zh-cn/14-efcore-pemelo-sql-zh) |
+| 14       | [ADNC 如何使用仓储 - 执行原生SQL](https://docs.aspdotnetcore.net/wiki/zh-cn/14-efcore-pemelo-sql-zh) |
 | 15       | [ADNC 如何使用仓储 - 读写分离](https://docs.aspdotnetcore.net/wiki/zh-cn/15-maxsale-readwritesplit-zh) |
 | 16       | [ADNC Id生成器(雪花算法)介绍](https://docs.aspdotnetcore.net/wiki/zh-cn/16-snowflake-max_value-wokerid-zh) |
 | 17       | [ADNC 如何使用Cache/Redis/分布式锁/布隆过滤器](https://docs.aspdotnetcore.net/wiki/zh-cn/17-cache-redis-distributedlock-bloomfilter-zh) |
@@ -275,11 +276,11 @@ Whse/
 
 ### JMeter测试
 
-> 6个测试用例覆盖了网关、服务发现、配置中心、服务间同步调用、数据库 CRUD、本地事务、分布式事务、缓存、布隆过滤器、SkyAPM 链路、NLog 日志记录、操作日志记录。
+> JMeter 相关测试场景覆盖了网关、服务发现、配置中心、服务间同步调用、数据库 CRUD、本地事务、分布式事务、缓存、布隆过滤器、SkyAPM 链路、NLog 日志记录、操作日志记录。
 
 - ECS服务器配置：4核8G，带宽8M。服务器上装了很多东西，剩余大约50%的CPU资源，50%的内存资源。
 - 因为服务器带宽限制，吞吐率约1000/s左右。
-- 模拟并发线程1200/s
+- 模拟并发线程数：1200
 - 读写比率7:3
 
 ### 前端
@@ -292,8 +293,8 @@ Whse/
 
 #### 界面截图
 
-![.NET微服务开源框架-异常日志界面](https://aspdotnetcore.net/assets/images/adnc-dashboard-nlog.png)
-![.NET微服务开源框架-角色管理界面](https://aspdotnetcore.net/assets/images/adnc-dashboard-role.png)
+![.NET微服务开源框架-异常日志界面](./docs/assets/images/adnc-dashboard-nlog.png)
+![.NET微服务开源框架-角色管理界面](./docs/assets/images/adnc-dashboard-role.png)
 
 ### 相关链接
 
