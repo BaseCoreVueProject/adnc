@@ -20,7 +20,6 @@
   <a href="./README_ZH.md">简体中文</a> · English
 </p>
 
-
 ## What Is ADNC?
 
 `ADNC` is an open-source `.NET 8` framework for building modular business systems that can evolve from modular monoliths into distributed microservices. It brings together the infrastructure, conventions, and sample services that teams typically need when building production-grade systems: gateway routing, service discovery, centralized configuration, authentication, inter-service communication, event-driven integration, persistence, caching, observability, resilience, and deployment support.
@@ -31,45 +30,37 @@ ADNC is intentionally not a one-size-fits-all template. It demonstrates how diff
 
 ## Why ADNC
 
-Distributed systems fail most often at the boundaries: service ownership, data consistency, configuration drift, operational visibility, authentication, and integration contracts. ADNC focuses on those boundaries instead of only scaffolding controllers and repositories.
+**Distributed systems fail most often at the boundaries.** 
+Service ownership, data consistency, configuration drift, and integration contracts are where real complexity lies. ADNC focuses on solving these **boundary challenges** rather than just scaffolding simple controllers and repositories.
 
-Use ADNC when you want:
+ADNC is built on three core pillars:
 
-- A practical `.NET 8` architecture baseline for business applications.
-- A pragmatic framework for evolving modular monoliths into distributed microservices.
-- Consistent infrastructure abstractions across services without forcing identical project layouts.
-- Examples of HTTP, gRPC, and event-driven service integration in one repository.
-- A realistic demo that includes gateway, identity, persistence, cache, messaging, tracing, logs, and deployment assets.
-- Source code and documentation that can be studied, customized, or selectively adopted.
+*   **Modular Monolith First** – Design with strict boundaries from day one. *Stop the "Big Ball of Mud" before it starts.*
+*   **Strategic Evolution** – Extract services only when scale justifies complexity. *Distributed systems are a cost, not a feature.*
+*   **Enterprise Infrastructure** – Production-ready building blocks for .NET 8. *Focus on business behavior, not plumbing.*
 
-ADNC is not positioned as:
-
-- A black-box platform that hides .NET application architecture.
-- Generated code with no architectural intent.
-- A microservice-only template that requires every bounded context to be deployed independently from day one.
-- A benchmark report. Performance notes are scenario references, not guarantees.
+#### Use ADNC when you need:
+- **A Strategic Baseline:** A pragmatic .NET 8 framework that balances simplicity and scalability.
+- **Seamless Evolution:** A path to evolve modular monoliths into distributed microservices without massive rewrites.
+- **Architectural Discipline:** Consistent infrastructure abstractions (Caching, Messaging, Auth) across services.
+- **Production Realism:** A demo including Gateway, Identity, CAP (Event Bus), SkyWalking (Tracing), and more.
 
 ## Design Principles
 
 **Modular first, distributed when necessary**
-
-Service boundaries should be explicit before deployment boundaries become expensive. ADNC supports modular service design and lets teams adopt distributed deployment where the operational cost is justified.
+Service boundaries should be explicit before deployment boundaries become expensive. ADNC supports modular design and lets teams adopt distributed deployment only when the operational ROI is clear.
 
 **Different domains deserve different shapes**
+A simple CRUD service shouldn't be forced into the same complexity as a domain-heavy service. ADNC promotes informed trade-offs across different project styles.
 
-Small CRUD-oriented services do not need the same structure as domain-heavy services. The demo intentionally includes multiple project styles so teams can make informed trade-offs.
+**Shared Infrastructure, Owned Business Logic**
+Cross-cutting concerns (Caching, Repositories, Events, Logging) are centralized in reusable building blocks. Business logic remains pure and isolated within service-specific Application and Domain layers.
 
-**Infrastructure is shared; business behavior is owned by services**
+**Operational concerns are first-class citizens**
+Configuration, Tracing, Gateway routing, and HealthChecks are treated as core architectural requirements, not operational afterthoughts.
 
-Cross-cutting concerns such as authentication, caching, repository patterns, remote calls, events, logging, and health checks are centralized in reusable packages. Business logic remains in service-specific application and domain layers.
-
-**Operational concerns are part of the architecture**
-
-Configuration, discovery, tracing, logging, gateway routing, health checks, and deployment assets are treated as first-class concerns, not afterthoughts.
-
-**Prefer replaceable integrations**
-
-The project uses established .NET ecosystem components such as Ocelot, Consul, Refit, gRPC, EF Core, Dapper, CAP, RabbitMQ, Redis, Polly, NLog, SkyAPM, and HealthChecks. ADNC organizes these tools behind consistent conventions rather than reinventing them.
+**Prefer replaceable integrations over reinvention**
+ADNC orchestrates the best of the .NET ecosystem—**Consul, Cap, EF Core, Dapper, Redis, SkyAPM**—behind consistent conventions rather than reinventing the wheel.
 
 ## Architecture at a Glance
 
@@ -197,7 +188,7 @@ The fastest way to get started is to follow the quick start guide. The demo requ
 1. Install the `.NET 8 SDK`.
 2. Read the [ADNC Quick Start Guide](https://docs.aspdotnetcore.net/wiki/en/02-quickstart).
 3. Open `src/Adnc.sln` for framework packages or `src/Demo/Adnc.Demo.sln` for demo services.
-4. Prepare infrastructure from the quick start guide or the Docker Compose assets in `docs/devops-staging`.
+4. Prepare infrastructure from the quick start guide or the Docker Compose assets in `deploy/staging`.
 5. Initialize demo data from [`database/mysql/adnc.sql`](./database/mysql/adnc.sql).
 6. Start the gateway and demo services in the documented order.
 
