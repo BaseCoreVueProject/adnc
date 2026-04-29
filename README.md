@@ -54,7 +54,7 @@ ADNC is built on three core pillars:
 ## Design Principles
 
 **Modular first, distributed when necessary**
-Service boundaries should be explicit before deployment boundaries become expensive. ADNC supports modular design and lets teams adopt distributed deployment only when the operational ROI is clear.
+Service boundaries should be explicit before deployment boundaries become expensive. ADNC helps teams establish clear modular boundaries first and introduce distributed deployment only when it is actually needed.
 
 **Different domains deserve different shapes**
 A simple CRUD service shouldn't be forced into the same complexity as a domain-heavy service. ADNC promotes informed trade-offs across different project styles.

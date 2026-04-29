@@ -1,4 +1,4 @@
-# <div align="center"><img src="https://aspdotnetcore.net/assets/images/adnc-github.png" alt="ADNC-基于.NET平台的微服务开源框架" style="zoom:50%;" /></div>
+# <div align="center"><img src="https://aspdotnetcore.net/assets/images/adnc-github.png" alt="ADNC-支持模块化单体平滑演进为分布式微服务的 .NET 8 开源框架" style="zoom:50%;" /></div>
 <div align='center'>
 <a href="./LICENSE">
 <img alt="GitHub license" src="https://img.shields.io/github/license/AlphaYu/Adnc"/>
@@ -11,25 +11,71 @@
 </a>
 <img alt="Visitors" src="https://komarev.com/ghpvc/?username=alphayu&color=red&label=Visitors"/>
 </div>
+<p align="center">
+  一套可落地的 .NET 8 框架，支持模块化单体平滑演进为分布式微服务。
+</p>
+<p align="center">
+  <a href="./README.md">English</a> · 简体中文
+</p>
 
-###### <div align="center">代码改变世界，开源推动社区</div>
 
-[简体中文](./README_ZH.md)  [English](./README.md)
 
 ## 简介
 
 ### ADNC 是什么？
 
-`ADNC` 是一个基于 `.NET 8` 的开源分布式/微服务框架，也适用于单体架构项目。它围绕服务注册与发现、配置中心、链路追踪、负载均衡、熔断容错、分布式事务、分布式缓存、消息队列、`RPC` 调用（`HTTP` / `gRPC`）、认证授权、读写分离和日志记录等常见能力，提供了一套可直接落地的基础设施与工程实践。项目同时提供了配套文档和示例代码，便于理解框架设计并快速上手。
+`ADNC` 是一个基于 `.NET 8` 的开源框架，适合构建边界清晰的模块化业务系统，并支持从模块化单体逐步演进为分布式微服务。它围绕网关路由、服务注册与发现、配置中心、认证授权、服务间通信、事件驱动集成、持久化、缓存、可观测性、弹性治理和部署支持等常见能力，提供了一套可直接落地的基础设施与工程实践。
+
+这个仓库不仅包含框架代码，也提供了一套可以直接运行的示例系统。它包含可复用的 `Adnc.Infra.*` 基础设施包、`Adnc.Shared.*` 服务通用包、Ocelot 网关、多服务 Demo、数据库脚本、Docker Compose 部署资产，以及中英文配套文档。
+
+ADNC 并不是一套“一刀切”的模板。它展示了不同服务形态如何在同一套基础设施和约定下共存：经典分层服务、紧凑型单项目服务，以及带明确领域层的 DDD 风格服务。
 
 ### 为什么选择 ADNC？
 
-- 支持多种服务形态：既支持经典三层，也支持 `DDD` 和更紧凑的单项目服务结构。
-- 基础设施开箱可用：围绕配置、注册发现、缓存、消息、认证、日志等常见需求提供现成集成方案。
-- 适合学习与落地：仓库同时提供完整 Demo、配套文档和前端示例，便于理解整体架构和实践方式。
-- 保持开放与可扩展：项目基于 `MIT` 许可证发布，可按需裁剪、扩展和集成到现有系统中。
+**分布式系统最容易失败的地方，往往不是控制器和仓储，而是边界。**
+服务归属、数据一致性、不同环境之间的配置不一致、认证授权、调用链路和服务之间的接口约定，才是真正消耗工程成本的地方。ADNC 关注这些边界问题，而不是只生成简单的 CRUD 代码。
 
-无论是从零搭建新系统，还是梳理和演进现有项目，ADNC 都能作为一套可参考、可复用的工程基础。
+ADNC 建立在三个核心支柱之上：
+
+- **模块化单体优先**：从第一天开始设计清晰边界，避免系统过早退化为“大泥球”。
+- **战略性演进**：只有当规模、团队或运维收益证明值得时，再拆分为独立服务。分布式系统是一种成本，不是功能本身。
+- **企业级基础设施**：围绕 .NET 8 提供生产级基础设施积木，让业务代码专注于业务行为，而不是重复处理技术管道。
+
+#### 当你需要这些能力时，可以选择 ADNC：
+
+- **战略性基线**：一套在简单性和可扩展性之间取得平衡的 .NET 8 框架。
+- **平滑演进路径**：帮助模块化单体逐步演进为分布式微服务，避免大规模重写。
+- **架构纪律**：在缓存、消息、认证、仓储、远程调用等横切能力上保持一致抽象。
+- **贴近生产的示例**：Demo 覆盖网关、身份认证、CAP 事件总线、SkyWalking 链路追踪、缓存、日志和部署资产。
+
+#### ADNC 不是：
+
+- 隐藏 .NET 应用架构细节的黑盒平台。
+- 没有架构意图的代码生成器。
+- 强制每个限界上下文从第一天开始独立部署的纯微服务模板。
+- 性能基准报告。性能说明只是特定场景下的参考，不代表通用承诺。
+
+## 设计原则
+
+**模块化优先，必要时再分布式化**
+
+在系统还没有被拆成多个独立服务之前，就应该先把业务模块和职责边界划清楚。ADNC 支持先建立清晰的模块边界，再根据实际需要逐步引入分布式部署。
+
+**不同领域需要不同形态**
+
+简单 CRUD 服务不应该被迫承担领域复杂服务的结构成本。ADNC 通过多种 Demo 结构帮助团队做出更合适的取舍。
+
+**基础设施共享，业务逻辑归服务所有**
+
+认证、缓存、仓储、事件、日志、健康检查等横切能力集中在可复用构建块中；业务逻辑保留在对应服务的 Application 和 Domain 层中。
+
+**运维能力是一等架构关注点**
+
+配置、注册发现、链路追踪、日志、网关路由、健康检查和部署资产都被视为架构的一部分，而不是事后补上的运维脚本。
+
+**优先集成成熟组件，而不是重复造轮子**
+
+ADNC 将 Ocelot、Consul、Refit、gRPC、EF Core、Dapper、CAP、RabbitMQ、Redis、Polly、NLog、SkyAPM 和 HealthChecks 等 .NET 生态组件组织在一致的工程约定之下。
 
 ## 快速开始
 
@@ -48,17 +94,20 @@
 
 ```
 adnc 
-├── .github
-│   └── workflows CICD脚本目录(github-action)
-├── doc 技术文档目录
-├── src 源代码目录
-│   ├── Infrastructures 基础架构层代码目录
-│   ├── ServiceShared 服务通用层代码目录
-│   ├── Gateways ocelot网关代码目录
-│   └── Demo 示例代码目录
-├── test 测试相关目录
-├── .gitignore
+├── .github/                   GitHub Actions 工作流
+├── database/                  数据库初始化脚本
+├── deploy/                    Docker Compose 部署资产
+├── docs/
+│   ├── architecture/          架构决策记录
+│   └── wiki/                  中英文文档源文件
+├── src/
+│   ├── Infrastructures/       ADNC 基础设施包
+│   ├── ServiceShared/         服务通用层构建块
+│   ├── Gateways/              Ocelot 网关
+│   └── Demo/                  Demo 微服务
+├── test/                      测试相关项目
 ├── README.md
+├── README_ZH.md
 └── LICENSE
 ```
 ### 重要文件
@@ -244,7 +293,7 @@ Whse/
 #### 界面截图
 
 ![.NET微服务开源框架-异常日志界面](https://aspdotnetcore.net/assets/images/adnc-dashboard-nlog.png)
-![.NET微服务开源框架-角色管理界面](https://aspdotnetcore.net/assets/images/adnc-dashboard-role.png)s
+![.NET微服务开源框架-角色管理界面](https://aspdotnetcore.net/assets/images/adnc-dashboard-role.png)
 
 ### 相关链接
 
@@ -254,7 +303,7 @@ Whse/
 
 #### 文档网址
 
-- [https://docs.aspdotnetcore.net](https://docs.aspdotnetcore.net/README_ZH)
+- [https://docs.aspdotnetcore.net](https://docs.aspdotnetcore.net)
 
 #### 演示网址
 
@@ -266,7 +315,7 @@ Whse/
 
 #### 数据库脚本
 
-- [adnc/doc/dbsql at develop · AlphaYu/adnc](https://github.com/AlphaYu/adnc/tree/develop/doc/dbsql)
+- [database/mysql/adnc.sql](./database/mysql/adnc.sql)
 
 ### 问题交流
 
