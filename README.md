@@ -45,6 +45,12 @@ ADNC is built on three core pillars:
 - **Architectural Discipline:** Consistent infrastructure abstractions (Caching, Messaging, Auth) across services.
 - **Production Realism:** A demo including Gateway, Identity, CAP (Event Bus), SkyWalking (Tracing), and more.
 
+#### ADNC is not:
+- A black-box platform that hides .NET application architecture.
+- A code generator that produces architecture without intent.
+- A microservice-only template that forces every bounded context to be deployed independently from day one.
+- A benchmark claim. Performance notes are scenario references, not guarantees.
+
 ## Design Principles
 
 **Modular first, distributed when necessary**
