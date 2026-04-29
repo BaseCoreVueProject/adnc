@@ -1,4 +1,4 @@
-# <div align="center"><img src="./docs/assets/images/adnc-github.png" alt="ADNC A pragmatic .NET 8 reference architecture for modular monoliths, distributed applications, and microservice systems." style="zoom:50%;" /></div>
+# <div align="center"><img src="./docs/assets/images/adnc-github.png" alt="ADNC A pragmatic .NET 8 framework for modular monoliths to evolve seamlessly into distributed microservices." style="zoom:50%;" /></div>
 
 <div align="center">
   <a href="./LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/AlphaYu/Adnc"/></a>
@@ -7,7 +7,7 @@
   <img alt="Visitors" src="https://komarev.com/ghpvc/?username=alphayu&color=red&label=Visitors"/>
 </div>
 <p align="center">
-  A pragmatic .NET 8 reference architecture for modular monoliths, distributed applications, and microservice systems.
+  A pragmatic .NET 8 framework for modular monoliths to evolve seamlessly into distributed microservices.
 </p>
 <p align="center">
   <a href="#why-adnc">Why ADNC</a> ·
@@ -23,7 +23,7 @@
 
 ## What Is ADNC?
 
-`ADNC` is an open-source distributed application framework built on `.NET 8`. It brings together the infrastructure, conventions, and sample services that teams typically need when building production-grade business systems: gateway routing, service discovery, centralized configuration, authentication, inter-service communication, event-driven integration, persistence, caching, observability, resilience, and deployment support.
+`ADNC` is an open-source `.NET 8` framework for building modular business systems that can evolve from modular monoliths into distributed microservices. It brings together the infrastructure, conventions, and sample services that teams typically need when building production-grade systems: gateway routing, service discovery, centralized configuration, authentication, inter-service communication, event-driven integration, persistence, caching, observability, resilience, and deployment support.
 
 The repository is both a framework and a working reference implementation. It includes reusable `Adnc.Infra.*` packages, shared service-layer packages, an Ocelot gateway, a multi-service demo domain, database scripts, Docker Compose infrastructure assets, and English/Chinese documentation.
 
@@ -36,7 +36,7 @@ Distributed systems fail most often at the boundaries: service ownership, data c
 Use ADNC when you want:
 
 - A practical `.NET 8` architecture baseline for business applications.
-- A reference implementation for moving from modular monoliths toward microservices.
+- A pragmatic framework for evolving modular monoliths into distributed microservices.
 - Consistent infrastructure abstractions across services without forcing identical project layouts.
 - Examples of HTTP, gRPC, and event-driven service integration in one repository.
 - A realistic demo that includes gateway, identity, persistence, cache, messaging, tracing, logs, and deployment assets.
