@@ -1,8 +1,8 @@
-# ADNC Project Tour: A pragmatic .NET 8 reference architecture for modular monoliths, distributed applications, and microservice systems
+# ADNC Project Tour: A pragmatic .NET 8 framework for modular monoliths to evolve seamlessly into distributed microservices.
 
 [GitHub Repository](https://github.com/alphayu/adnc)
 
-If you are looking for a .NET microservices foundation project that can run out of the box, is easy to extend, and is also suitable for learning, ADNC is a good reference. The repository includes reusable infrastructure (`Adnc.Infra.*` / `Adnc.Shared.*`), complete demos, and supporting Wiki documentation, helping you move step by step from "understanding it first" to "modifying it yourself."
+If you are looking for a .NET framework that helps modular business systems evolve toward distributed microservices, ADNC is a practical reference that can run out of the box, is easy to extend, and is also suitable for learning. The repository includes reusable infrastructure (`Adnc.Infra.*` / `Adnc.Shared.*`), complete demos, and supporting Wiki documentation, helping you move step by step from "understanding it first" to "modifying it yourself."
 
 This article uses plain language to quickly introduce what is in this repository, what problems it mainly solves, and the recommended order for reading and getting started.
 
@@ -10,7 +10,7 @@ This article uses plain language to quickly introduce what is in this repository
 
 # First, the One-Sentence Explanation
 
-ADNC is an open-source distributed/microservices framework based on `.NET 8`, and it can also be used for monolithic projects. It mainly focuses on these capabilities:
+ADNC is an open-source `.NET 8` framework for building modular business systems that can evolve from modular monoliths into distributed microservices. It mainly focuses on these capabilities:
 
 - Service registration and discovery, configuration center
 - Inter-service calls (HTTP / gRPC), load balancing, fault-tolerance governance (Polly)
@@ -150,7 +150,7 @@ ADNC's value is not only in "how many features it encapsulates," but also in how
 
 You can:
 
-- use it as a starting point for "building a microservices foundation from scratch";
+- use it as a starting point for building a modular system with a clear path to distributed microservices;
 - or take only part of it (such as remote call encapsulation, configuration/registry center integration, or event-driven templates) and integrate it into your existing system.
 
 ----
